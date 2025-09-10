@@ -1,4 +1,4 @@
-import { Block, BlockTitle, Button, Card, List, ListItem, Navbar, NavbarBackLink, Page, Preloader } from 'konsta/react';
+import { Block, BlockTitle, Button, Card, List, ListItem, Navbar, NavbarBackLink, Page, Preloader, Popup } from 'konsta/react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ const ThemePublicPage = () => {
   const [theme, setTheme] = useState<ThemeRecord | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const downloads = useDownloadsStore((s) => s.entries);
   const setDownloaded = useDownloadsStore((s) => s.setDownloaded);
@@ -56,21 +57,32 @@ const ThemePublicPage = () => {
       {theme ? (
         <>
           {theme.previewImageUrl ? (
-            <Card footer={(theme.ownerNickname ? theme.ownerNickname : '') + (theme.description ? (theme.ownerNickname ? ' · ' : '') + theme.description : '') || undefined} className="m-4">
-              <img src={theme.previewImageUrl} alt="preview" style={{ width: '100%', display: 'block' }} />
+            <Card className="m-4" onClick={() => setPreviewOpen(true)}>
+              <img src={theme.previewImageUrl} alt="preview" style={{ width: '100%', maxHeight: '60vh', objectFit: 'contain', display: 'block' }} />
             </Card>
           ) : (
-            <Card footer={(theme.ownerNickname ? theme.ownerNickname : '') + (theme.description ? (theme.ownerNickname ? ' · ' : '') + theme.description : '') || undefined} className="m-4">
+            <Card className="m-4">
               <RiImageLine size={64} />
             </Card>
           )}
+
+          <Popup opened={previewOpen} onBackdropClick={() => setPreviewOpen(false)}>
+            <div className="w-screen h-screen bg-white dark:bg-black flex items-center justify-center relative">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-base font-medium text-neutral-900 dark:text-white">
+                <Button clear onClick={() => setPreviewOpen(false)}>
+                  {t('close')}
+                </Button>
+              </div>
+              {theme.previewImageUrl ? <img src={theme.previewImageUrl} alt="preview-full" style={{ maxWidth: '100%', maxHeight: '100%' }} /> : null}
+            </div>
+          </Popup>
 
           <Block strong inset>
             {(() => {
               const entry = downloads[theme.id];
               const downloaded = !!entry;
               const modified = entry ? isModified(entry) : false;
-              const outdated = downloaded ? (theme.updatedAt > (entry!.original.updatedAt || 0)) : false;
+              const outdated = downloaded ? theme.updatedAt > (entry!.original.updatedAt || 0) : false;
               if (!downloaded) {
                 return (
                   <Button
@@ -92,13 +104,7 @@ const ThemePublicPage = () => {
               return (
                 <>
                   <Button large disabled>
-                    {modified && outdated
-                      ? `${t('downloaded-modified')} · ${t('update-available')}`
-                      : modified
-                      ? t('downloaded-modified')
-                      : outdated
-                      ? t('update-available')
-                      : t('downloaded')}
+                    {modified && outdated ? `${t('downloaded-modified')} · ${t('update-available')}` : modified ? t('downloaded-modified') : outdated ? t('update-available') : t('downloaded')}
                   </Button>
                   {outdated ? (
                     <Button
@@ -143,12 +149,17 @@ const ThemePublicPage = () => {
             })()}
           </Block>
 
+          <BlockTitle>{t('creator')}</BlockTitle>
+          <List strongIos inset>
+            <ListItem title={theme.ownerNickname || '-'} />
+          </List>
+
           <BlockTitle>{t('description')}</BlockTitle>
           <List strongIos inset>
             <ListItem title={theme.description || '-'} />
           </List>
 
-          <BlockTitle>Info</BlockTitle>
+          <BlockTitle>{t('details')}</BlockTitle>
           <List strongIos inset>
             <ListItem title={`ID #${theme.id}`} />
             <ListItem title={`Downloads: ${theme.downloadCount}`} />

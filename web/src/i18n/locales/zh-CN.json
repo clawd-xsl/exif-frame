@@ -75,5 +75,14 @@
   "update-to-latest": "更新到最新",
   "downloaded-themes": "已下载的主题",
   "select": "选择",
-  "image-too-large-2mb": "图片过大（最大 2MB）"
+  "image-too-large-2mb": "图片过大（最大 2MB）",
+  "selected-theme": "已选主题",
+  "custom-theme": "自定义",
+  "edit-in-library": "在库中编辑",
+  "N-photos-failed": "{N} 张图片转换失败。",
+  "none": "无",
+  "creator": "作者",
+  "details": "详细信息",
+  "preview": "预览"
+  , "close": "关闭"
 }

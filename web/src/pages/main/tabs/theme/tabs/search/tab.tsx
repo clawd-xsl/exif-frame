@@ -159,12 +159,16 @@ export const SearchTab = () => {
               ? t('update-available')
               : t('downloaded')
             : undefined;
+          const nick = th.ownerNickname ? th.ownerNickname : '';
+          const descFull = (th.description || '').trim();
+          const descShort = descFull.length > 20 ? `${descFull.slice(0, 20)}…` : descFull;
+          const subtitle = (nick ? nick : '') + (descShort ? (nick ? ' · ' : '') + descShort : '');
           return (
             <ListItem
               key={th.id}
               media={th.previewImageUrl ? <img src={th.previewImageUrl} alt="preview" width={44} height={44} /> : <RiImageLine size={28} />}
               title={th.title}
-              subtitle={(th.ownerNickname ? th.ownerNickname : '') + (th.description ? (th.ownerNickname ? ' · ' : '') + th.description : '') || undefined}
+              subtitle={subtitle || undefined}
               after={
                 <span>
                   <RiDownloadLine size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> {th.downloadCount}

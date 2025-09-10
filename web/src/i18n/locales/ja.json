@@ -76,4 +76,13 @@
   "downloaded-themes": "ダウンロードしたテーマ",
   "select": "選択",
   "image-too-large-2mb": "画像サイズが大きすぎます（最大 2MB）"
+  , "selected-theme": "選択中のテーマ"
+  , "custom-theme": "カスタム"
+  , "edit-in-library": "ライブラリで編集"
+  , "N-photos-failed": "{N} 枚の画像の変換に失敗しました。"
+  , "none": "なし"
+  , "creator": "製作者"
+  , "details": "詳細"
+  , "preview": "プレビュー"
+  , "close": "閉じる"
 }

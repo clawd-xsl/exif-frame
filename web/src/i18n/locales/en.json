@@ -77,4 +77,13 @@
   "downloaded-themes": "Downloaded Themes",
   "select": "Select",
   "image-too-large-2mb": "Image too large (max 2MB)"
+  , "selected-theme": "Selected Theme"
+  , "custom-theme": "Custom"
+  , "edit-in-library": "Edit in Library"
+  , "N-photos-failed": "{N} photos failed to convert."
+  , "none": "None"
+  , "creator": "Creator"
+  , "details": "Details"
+  , "preview": "Preview"
+  , "close": "Close"
 }

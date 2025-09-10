@@ -21,14 +21,25 @@ export const DownloadAllPicturesButton = () => {
     setLoading(true);
     try {
       const fileExtension = webpMode ? 'webp' : 'jpeg';
+      let failed = 0;
       for (const picture of pictures) {
-        const dumpedExifMetadata = maintainExifMetadata ? await dumpExifMetadata(await picture.loadDataUrl()) : null;
-        const convertedImage = webpMode ? await SvgConverter.toWebp(svg, picture, assets) : await SvgConverter.toJpeg(svg, picture, assets);
-        const blob = new Blob([dumpedExifMetadata ? await replaceExifMetadata(convertedImage, dumpedExifMetadata) : (dumpedExifMetadata as BlobPart)], { type: `image/${fileExtension}` });
-        const url = URL.createObjectURL(blob);
-        const baseName = picture.file.name.replace(/\.[^.]+$/, '');
-        await download(`exif_frame_${baseName}.${fileExtension}`, url);
-        URL.revokeObjectURL(url);
+        try {
+          const dumpedExifMetadata = maintainExifMetadata ? await dumpExifMetadata(await picture.loadDataUrl()) : null;
+          const convertedImage = webpMode ? await SvgConverter.toWebp(svg, picture, assets) : await SvgConverter.toJpeg(svg, picture, assets);
+          const payload = dumpedExifMetadata ? await replaceExifMetadata(convertedImage, dumpedExifMetadata) : convertedImage;
+          const blob = new Blob([payload as BlobPart], { type: `image/${fileExtension}` });
+          const url = URL.createObjectURL(blob);
+          const baseName = picture.file.name.replace(/\.[^.]+$/, '');
+          await download(`exif_frame_${baseName}.${fileExtension}`, url);
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          console.error('convert failed for', picture.file.name, err);
+          failed++;
+          continue;
+        }
+      }
+      if (failed > 0) {
+        alert(t('N-photos-failed').replace('{N}', String(failed)));
       }
     } catch (err) {
       console.error(err);

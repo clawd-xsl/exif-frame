@@ -77,4 +77,13 @@
   "downloaded-themes": "다운로드한 테마",
   "select": "선택",
   "image-too-large-2mb": "이미지 용량이 너무 큽니다 (최대 2MB)"
+  , "selected-theme": "선택된 테마"
+  , "custom-theme": "사용자 정의"
+  , "edit-in-library": "보관함에서 수정"
+  , "N-photos-failed": "{N}장의 사진 변환에 실패했습니다."
+  , "none": "없음"
+  , "creator": "제작자"
+  , "details": "세부정보"
+  , "preview": "미리보기"
+  , "close": "닫기"
 }
