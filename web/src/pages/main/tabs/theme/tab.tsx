@@ -1,24 +1,37 @@
-import { Navbar } from 'konsta/react';
-import { useThemeStore } from '../../state/theme.store';
+import { Navbar, Segmented, SegmentedButton } from 'konsta/react';
 import { useTranslation } from 'react-i18next';
+import { useThemeTabIndexStore } from '../../state/theme-tab-index.store';
+import { LibraryTab } from './tabs/library/tab';
+import { SearchTab } from './tabs/search/tab';
+import { UploadTab } from './tabs/upload/tab';
 
 export const ThemeTab = () => {
   const { t } = useTranslation();
-  const { svg, setSvg } = useThemeStore();
+
+  const { themeTabIndex, setThemeTabIndex } = useThemeTabIndexStore();
 
   return (
     <>
-      <Navbar title={t('theme')} />
+      <Navbar
+        title={t('theme')}
+        subnavbar={
+          <Segmented strong>
+            <SegmentedButton strong active={themeTabIndex === 0} onClick={() => setThemeTabIndex(0)}>
+              {t('library')}
+            </SegmentedButton>
+            <SegmentedButton strong active={themeTabIndex === 1} onClick={() => setThemeTabIndex(1)}>
+              {t('search')}
+            </SegmentedButton>
+            <SegmentedButton strong active={themeTabIndex === 2} onClick={() => setThemeTabIndex(2)}>
+              {t('upload')}
+            </SegmentedButton>
+          </Segmented>
+        }
+      />
 
-      <div className="p-4">
-        <textarea
-          value={svg}
-          onChange={(e) => setSvg(e.target.value)}
-          placeholder="Paste or edit SVG here"
-          wrap="off"
-          className="w-full h-[60vh] block resize-vertical p-3 font-mono text-xs overflow-x-auto rounded-lg border border-neutral-200 bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:focus:ring-neutral-700"
-        />
-      </div>
+      {themeTabIndex === 0 && <LibraryTab />}
+      {themeTabIndex === 1 && <SearchTab />}
+      {themeTabIndex === 2 && <UploadTab />}
     </>
   );
 };
