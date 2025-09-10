@@ -73,15 +73,15 @@ export class SvgConverter {
       LENS_MODEL: exifMetadata?.LensModel?.description || '',
       FOCAL_LENGTH: exifMetadata?.FocalLength?.description?.replace(' mm', 'mm') || '',
       FOCAL_LENGTH_35MM: exifMetadata?.FocalLengthIn35mmFilm?.value
-        ? `${exifMetadata.FocalLengthIn35mmFilm.value}mm`
-        : exifMetadata?.UprightFocalLength35mm?.value
+        ? `${exifMetadata.FocalLengthIn35mmFilm.value}`
+        : `${exifMetadata?.UprightFocalLength35mm?.value}`
         ? exifMetadata.UprightFocalLength35mm.value.toString().includes('.')
-          ? `${exifMetadata.UprightFocalLength35mm.value.toString().split('.').shift()}mm`
-          : `${exifMetadata.UprightFocalLength35mm.value}mm`
+          ? exifMetadata.UprightFocalLength35mm.value.toString().split('.').shift() || ''
+          : `${exifMetadata.UprightFocalLength35mm.value}`
         : '',
       F_NUMBER: exifMetadata?.FNumber?.description?.substring(0, 5)?.replace('f/', 'F') || '',
       ISO: exifMetadata?.ISOSpeedRatings?.value ? exifMetadata.ISOSpeedRatings.value.toString() : '',
-      EXPOSURE_TIME: exifMetadata?.ExposureTime?.description ? exifMetadata.ExposureTime.description + 's' : '',
+      EXPOSURE_TIME: exifMetadata?.ExposureTime?.description ? exifMetadata.ExposureTime.description : '',
       DATE_TIME: exifMetadata?.DateTimeOriginal?.description
         ? (() => {
             const [date, time] = exifMetadata.DateTimeOriginal.description.split(' ');
