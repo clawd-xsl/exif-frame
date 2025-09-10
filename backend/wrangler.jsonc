@@ -1,0 +1,31 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "exif-frame",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-10",
+  "observability": {
+    "enabled": true
+  },
+  "workers_dev": false,
+  "route": {
+    "pattern": "api-exif-frame.yuru.cam",
+    "custom_domain": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "exif-frame",
+      "database_id": "3e676a88-2631-40d5-b43b-846800538667"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "exif-frame"
+    }
+  ]
+}
