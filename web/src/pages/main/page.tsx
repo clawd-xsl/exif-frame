@@ -7,6 +7,8 @@ import { RiGalleryFill, RiSettings3Fill } from 'react-icons/ri';
 import { MdDesignServices } from 'react-icons/md';
 import { useSettingStore } from './state/setting.store';
 import Loading from './components/loading';
+import { useDownloadsStore } from '../../state/downloads.store';
+import { useThemeStore } from './state/theme.store';
 import { useTabIndexStore } from './state/tab-index.store';
 import { useTranslation } from 'react-i18next';
 
@@ -14,10 +16,32 @@ export const MainPage = () => {
   const { t } = useTranslation();
   const { tabIndex, setTabIndex } = useTabIndexStore();
   const initializeDarkMode = useSettingStore((state) => state.initializeDarkMode);
+  const setSelectedIdStore = useDownloadsStore((s) => s.setSelectedId);
+  const downloadsEntries = useDownloadsStore((s) => s.entries);
 
   useEffect(() => {
     initializeDarkMode();
   }, [initializeDarkMode]);
+
+  // Keep active theme (svg/assets) in sync with currently selected downloaded theme
+  const selectedId = useDownloadsStore((s) => s.selectedId);
+  const selectedLocal = useDownloadsStore((s) => (s.selectedId ? s.entries[s.selectedId]?.local : null));
+  const setSvg = useThemeStore((s) => s.setSvg);
+  const setAssets = useThemeStore((s) => s.setAssets);
+  useEffect(() => {
+    if (selectedId == null || !selectedLocal) return;
+    setSvg(selectedLocal.svg ?? '');
+    setAssets(selectedLocal.assets ?? '');
+  }, [selectedId, selectedLocal?.svg, selectedLocal?.assets, setSvg, setAssets]);
+
+  // Auto-select latest downloaded theme when none is selected
+  useEffect(() => {
+    if (selectedId !== null) return;
+    const list = Object.values(downloadsEntries);
+    if (list.length === 0) return;
+    const latest = list.reduce((a, b) => (a.downloadedAt >= b.downloadedAt ? a : b));
+    setSelectedIdStore(latest.original.id);
+  }, [selectedId, downloadsEntries, setSelectedIdStore]);
 
   return (
     <>
