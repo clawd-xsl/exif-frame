@@ -19,7 +19,12 @@ export class SvgConverter {
     image.src = dataUrl;
     await new Promise((resolve) => (image.onload = resolve));
 
-    const exifMetadata = await loadExifMetadata(dataUrl);
+    let exifMetadata: any = null;
+    try {
+      exifMetadata = await loadExifMetadata(dataUrl);
+    } catch (e) {
+      console.warn('No EXIF metadata or failed to load; continue without it', e);
+    }
     console.log(exifMetadata);
 
     // Replace only inside template placeholders: ${ ... }
@@ -66,24 +71,26 @@ export class SvgConverter {
       return out;
     };
 
+    const toStr = (v: unknown) => (v === null || v === undefined ? '' : String(v));
     const replacements: Record<string, string> = {
-      IMAGE_WIDTH: image.width.toString(),
-      IMAGE_HEIGHT: image.height.toString(),
+      IMAGE_WIDTH: toStr(image.width),
+      IMAGE_HEIGHT: toStr(image.height),
       IMAGE_DATA: 'data:image/jpeg;base64,' + arrayBufferToBase64(await fetch(dataUrl).then((res) => res.arrayBuffer())),
-      MAKE: exifMetadata?.Make?.description || '',
-      MODEL: exifMetadata?.Model?.description || '',
-      LENS_MODEL: exifMetadata?.LensModel?.description || '',
-      FOCAL_LENGTH: exifMetadata?.FocalLength?.description?.replace(' mm', '') || '',
-      FOCAL_LENGTH_35MM: exifMetadata?.FocalLengthIn35mmFilm?.value
-        ? `${exifMetadata.FocalLengthIn35mmFilm.value}`
-        : `${exifMetadata?.UprightFocalLength35mm?.value}`
-        ? exifMetadata.UprightFocalLength35mm.value.toString().includes('.')
-          ? exifMetadata.UprightFocalLength35mm.value.toString().split('.').shift() || ''
-          : `${exifMetadata.UprightFocalLength35mm.value}`
-        : '',
-      F_NUMBER: exifMetadata?.FNumber?.description?.substring(0, 5)?.replace('f/', '') || '',
-      ISO: exifMetadata?.ISOSpeedRatings?.value ? exifMetadata.ISOSpeedRatings.value.toString() : '',
-      EXPOSURE_TIME: exifMetadata?.ExposureTime?.description ? exifMetadata.ExposureTime.description : '',
+      MAKE: toStr(exifMetadata?.Make?.description),
+      MODEL: toStr(exifMetadata?.Model?.description),
+      LENS_MODEL: toStr(exifMetadata?.LensModel?.description),
+      FOCAL_LENGTH: toStr(exifMetadata?.FocalLength?.description?.replace(' mm', '')),
+      FOCAL_LENGTH_35MM: (() => {
+        const v1 = exifMetadata?.FocalLengthIn35mmFilm?.value as unknown;
+        if (v1 !== null && v1 !== undefined) return toStr(v1);
+        const v2 = exifMetadata?.UprightFocalLength35mm?.value as unknown;
+        if (v2 === null || v2 === undefined) return '';
+        const s = String(v2);
+        return s.includes('.') ? s.split('.').shift() || '' : s;
+      })(),
+      F_NUMBER: toStr(exifMetadata?.FNumber?.description?.substring(0, 5)?.replace('f/', '')),
+      ISO: toStr(exifMetadata?.ISOSpeedRatings?.value),
+      EXPOSURE_TIME: toStr(exifMetadata?.ExposureTime?.description),
       DATE_TIME: exifMetadata?.DateTimeOriginal?.description
         ? (() => {
             const [date, time] = exifMetadata.DateTimeOriginal.description.split(' ');
