@@ -1,4 +1,4 @@
-import { Navbar, Toolbar, List, ListItem, Button } from 'konsta/react';
+import { Navbar, Toolbar, Button } from 'konsta/react';
 import { DownloadAllPicturesButton } from './components/download-all-pictures.button';
 import { UploadPicturesButton } from './components/upload-pictures.button';
 import { PicturesGrid } from './components/pictures.grid';
@@ -20,7 +20,28 @@ export const GalleryTab = () => {
 
   return (
     <>
-      <Navbar title={t('gallery')} />
+      <Navbar
+        title={t('gallery')}
+        subnavbar={
+          <Navbar
+            fontSizeIos="text-sm"
+            fontSizeMaterial="text-sm"
+            left={`${t('selected-theme')}: ${selected ? selected.original.title : t('none')}`}
+            right={
+              <Button
+                small
+                clear
+                onClick={() => {
+                  setMainTab(1);
+                  setThemeSubTab(0);
+                }}
+              >
+                {t('edit-in-library')}
+              </Button>
+            }
+          />
+        }
+      />
 
       <PicturesGrid />
 
@@ -35,28 +56,6 @@ export const GalleryTab = () => {
       )}
 
       <Toolbar className="bottom-12 fixed">
-        <div className="fixed left-0 right-0 bottom-20 z-10 px-4 pointer-events-none">
-          <div className="pointer-events-auto">
-            <List strongIos inset>
-              <ListItem
-                title={t('selected-theme')}
-                subtitle={selected ? selected.original.title : t('none')}
-                after={
-                  <Button
-                    small
-                    clear
-                    onClick={() => {
-                      setMainTab(1);
-                      setThemeSubTab(0);
-                    }}
-                  >
-                    {t('edit-in-library')}
-                  </Button>
-                }
-              />
-            </List>
-          </div>
-        </div>
         <UploadPicturesButton />
         <DownloadAllPicturesButton />
       </Toolbar>
