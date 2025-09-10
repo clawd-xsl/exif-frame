@@ -44,8 +44,10 @@ export class SvgConverter {
         }
 
         if (singleToken in repls) {
-          // For IMAGE_DATA, replacing the whole placeholder avoids the evaluator attempting a fetch.
-          if (singleToken === 'IMAGE_DATA') {
+          // Replace the whole placeholder for values that must remain literal
+          // - IMAGE_DATA: prevent secondary fetch/eval stage from touching data URLs
+          // - EXPOSURE_TIME: values like "1/120" must not be evaluated as arithmetic
+          if (singleToken === 'IMAGE_DATA' || singleToken === 'EXPOSURE_TIME') {
             replaceWhole = true;
             replacedInner = repls[singleToken];
           }
