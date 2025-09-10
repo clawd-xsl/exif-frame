@@ -66,8 +66,12 @@
   , "restore-original": "元に戻す"
   , "search-results": "検索結果"
   , "no-results": "結果がありません。"
+  , "all": "すべて"
   , "remove-download": "ダウンロードを削除"
   , "saved": "保存しました"
   , "preview-uploaded": "プレビューをアップロードしました"
   , "uploading": "アップロード中..."
+  , "downloaded-themes": "ダウンロードしたテーマ"
+  , "select": "選択"
+  , "image-too-large-2mb": "画像サイズが大きすぎます（最大 2MB）"
 }

@@ -40,6 +40,11 @@ export class ThemeSearch extends OpenAPIRoute {
     const data = await this.getValidatedData<typeof this.schema>();
     const { ownerMemberId, ids, title, sort, order, page = 1, pageSize = 20 } = data.query ?? ({} as any);
 
+    // Normalize pagination
+    const safePage = Math.max(1, Number(page) || 1);
+    const safeSize = Math.min(100, Math.max(1, Number(pageSize) || 20));
+    const titleParam = typeof title === 'string' ? title.trim() : '';
+
     const where: string[] = ["1 = 1"]; 
     const params: unknown[] = [];
 
@@ -61,8 +66,8 @@ export class ThemeSearch extends OpenAPIRoute {
       }
     }
 
-    if (title && title.trim().length >= 2) {
-      const t = title.trim().slice(0, 64);
+    if (titleParam.length >= 1) {
+      const t = titleParam.slice(0, 64);
       where.push(`title LIKE ?`);
       params.push(`%${t}%`);
     }
@@ -75,8 +80,6 @@ export class ThemeSearch extends OpenAPIRoute {
       orderBy = `id ${dir}`;
     }
 
-    const safePage = Math.max(1, Number(page) || 1);
-    const safeSize = Math.min(100, Math.max(1, Number(pageSize) || 20));
     const offset = (safePage - 1) * safeSize;
 
     const countRow = await queryOne<{ count: number }>(
@@ -96,6 +99,8 @@ export class ThemeSearch extends OpenAPIRoute {
       offset
     );
 
+    // Avoid CDN/browser caching for dynamic search
+    c.header('Cache-Control', 'no-store');
     return { success: true, page: safePage, pageSize: safeSize, total, themes: rows };
   }
 }

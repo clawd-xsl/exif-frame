@@ -90,6 +90,11 @@ const ThemeDetailPage = () => {
     const file = e.target.files?.[0];
     if (!file || !token || !theme) return;
     try {
+      // Client-side size guard aligned with backend (<= 2MB)
+      if (file.size > 2_000_000) {
+        setError(t('image-too-large-2mb'));
+        return;
+      }
       setUploading(true);
       await uploadThemePreview(token, theme.id, file);
       await load();

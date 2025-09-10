@@ -18,7 +18,6 @@ const ThemePublicPage = () => {
 
   const downloads = useDownloadsStore((s) => s.entries);
   const setDownloaded = useDownloadsStore((s) => s.setDownloaded);
-  const redownload = useDownloadsStore((s) => s.redownload);
 
   const load = async () => {
     try {
@@ -94,21 +93,24 @@ const ThemePublicPage = () => {
                   <Button large disabled>
                     {modified ? t('downloaded-modified') : t('downloaded')}
                   </Button>
-                  <Button
-                    large
-                    clear
-                    onClick={async () => {
-                      try {
-                        const res = await incrementDownload(theme.id);
-                        setTheme({ ...theme, downloadCount: res.downloadCount });
-                      } catch (error) {
-                        console.log(error);
-                      }
-                      redownload(theme);
-                    }}
-                  >
-                    {modified ? t('restore-original') : t('redownload')}
-                  </Button>
+                  {modified ? (
+                    <Button
+                      large
+                      clear
+                      onClick={async () => {
+                        try {
+                          const inc = await incrementDownload(theme.id);
+                          const latest = await fetchTheme(theme.id);
+                          setTheme({ ...latest.theme, downloadCount: inc.downloadCount });
+                          setDownloaded(latest.theme);
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }}
+                    >
+                      {t('restore-original')}
+                    </Button>
+                  ) : null}
                   <Button large clear onClick={() => useDownloadsStore.getState().remove(theme.id)}>
                     {t('remove-download')}
                   </Button>

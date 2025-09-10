@@ -1,9 +1,9 @@
-import { Block, BlockTitle, List, ListItem, Preloader, Searchbar } from 'konsta/react';
+import { Block, BlockTitle, List, ListItem, Preloader, Searchbar, Segmented, SegmentedButton, Toolbar } from 'konsta/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { searchThemes, ThemeRecord } from '../../../../../../api/themes';
-import { RiImageLine } from 'react-icons/ri';
+import { RiImageLine, RiDownloadLine } from 'react-icons/ri';
 import { useDownloadsStore, isModified } from '../../../../../../state/downloads.store';
 
 export const SearchTab = () => {
@@ -12,6 +12,7 @@ export const SearchTab = () => {
 
   const downloads = useDownloadsStore((s) => s.entries);
   const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<'all' | 'downloaded'>('all');
   const [loadingInitial, setLoadingInitial] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +22,25 @@ export const SearchTab = () => {
   const [total, setTotal] = useState(0);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  const inFlightKeyRef = useRef<string | null>(null);
+  const queryRef = useRef(query);
+  const pageRef = useRef(page);
+  const totalRef = useRef(total);
+  const themesRef = useRef<ThemeRecord[]>(themes);
+  const loadingInitialRef = useRef(loadingInitial);
+  const loadingMoreRef = useRef(loadingMore);
+
+  useEffect(() => { queryRef.current = query; }, [query]);
+  useEffect(() => { pageRef.current = page; }, [page]);
+  useEffect(() => { totalRef.current = total; }, [total]);
+  useEffect(() => { themesRef.current = themes; }, [themes]);
+  useEffect(() => { loadingInitialRef.current = loadingInitial; }, [loadingInitial]);
+  useEffect(() => { loadingMoreRef.current = loadingMore; }, [loadingMore]);
+
   const load = async (q: string, pageToLoad = 1, append = false) => {
+    const key = `${q}|${pageToLoad}`;
+    if (inFlightKeyRef.current === key) return;
+    inFlightKeyRef.current = key;
     try {
       if (append) setLoadingMore(true);
       else setLoadingInitial(true);
@@ -35,6 +54,7 @@ export const SearchTab = () => {
     } finally {
       setLoadingInitial(false);
       setLoadingMore(false);
+      inFlightKeyRef.current = null;
     }
   };
 
@@ -53,24 +73,26 @@ export const SearchTab = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  const hasMore = themes.length < total;
+  // const hasMore = themes.length < total;
 
-  // Infinite scroll observer
+  // Infinite scroll observer (attach once)
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry.isIntersecting && !loadingMore && !loadingInitial && hasMore) {
-          load(query.trim(), page + 1, true);
+        const hasMoreCurrent = themesRef.current.length < totalRef.current;
+        if (entry.isIntersecting && !loadingMoreRef.current && !loadingInitialRef.current && hasMoreCurrent) {
+          load(queryRef.current.trim(), pageRef.current + 1, true);
         }
       },
       { root: null, rootMargin: '200px' }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [loadingMore, loadingInitial, hasMore, page, query]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function dedupeById(items: ThemeRecord[]): ThemeRecord[] {
     const seen = new Set<number>();
@@ -86,7 +108,21 @@ export const SearchTab = () => {
 
   return (
     <>
-      <Searchbar value={query} onChange={(e) => setQuery((e.target as HTMLInputElement).value)} placeholder={t('search')} />
+      <Toolbar top>
+        <div style={{ flex: 1 }}>
+          <Searchbar value={query} onChange={(e) => setQuery((e.target as HTMLInputElement).value)} placeholder={t('search')} />
+        </div>
+      </Toolbar>
+      <Toolbar>
+        <Segmented strong>
+          <SegmentedButton strong active={filter === 'all'} onClick={() => setFilter('all')}>
+            {t('all')}
+          </SegmentedButton>
+          <SegmentedButton strong active={filter === 'downloaded'} onClick={() => setFilter('downloaded')}>
+            {t('downloaded')}
+          </SegmentedButton>
+        </Segmented>
+      </Toolbar>
 
       {error ? (
         <Block strong inset>
@@ -96,9 +132,9 @@ export const SearchTab = () => {
 
       <BlockTitle>{t('search-results')}</BlockTitle>
       <List strongIos inset>
-        {loadingInitial ? <ListItem title={t('loading')} after={<Preloader />} /> : null}
-        {themes.length === 0 && !loadingInitial ? <ListItem title={t('no-results')} /> : null}
-        {themes.map((th) => {
+        {loadingInitial && themes.length === 0 ? <ListItem title={t('loading')} after={<Preloader />} /> : null}
+        {(filter === 'downloaded' ? themes.filter((t) => downloads[t.id]) : themes).length === 0 && !loadingInitial ? <ListItem title={t('no-results')} /> : null}
+        {(filter === 'downloaded' ? themes.filter((t) => downloads[t.id]) : themes).map((th) => {
           const entry = downloads[th.id];
           const downloaded = !!entry;
           const modified = entry ? isModified(entry) : false;
@@ -109,7 +145,12 @@ export const SearchTab = () => {
             media={th.previewImageUrl ? <img src={th.previewImageUrl} alt="preview" width={44} height={44} /> : <RiImageLine size={28} />}
               title={th.title}
               subtitle={th.description || undefined}
-              after={status}
+              after={
+                <span>
+                  <RiDownloadLine size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> {th.downloadCount}
+                  {status ? ` · ${status}` : ''}
+                </span>
+              }
               link
               onClick={() => navigate(`/themes/${th.id}`)}
             />

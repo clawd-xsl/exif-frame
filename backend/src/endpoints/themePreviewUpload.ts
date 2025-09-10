@@ -51,7 +51,7 @@ function getJpegDimensions(bytes: Uint8Array): { width: number; height: number }
 export class ThemePreviewUpload extends OpenAPIRoute {
   schema = {
     tags: ["Themes"],
-    summary: "Upload preview image for a theme (JPEG, <=1MB, max 4096px)",
+    summary: "Upload preview image for a theme (JPEG, <=2MB, max 4096px)",
     request: {
       params: z.object({ id: Num() }),
     },
@@ -92,10 +92,10 @@ export class ThemePreviewUpload extends OpenAPIRoute {
     }
 
     // Read body and enforce size
-    const maxBytes = 1_000_000; // 1MB
+    const maxBytes = 2_000_000; // 2MB
     const buf = new Uint8Array(await c.req.arrayBuffer());
     if (buf.byteLength === 0) return c.json({ success: false, error: 'Empty body' }, 400);
-    if (buf.byteLength > maxBytes) return c.json({ success: false, error: 'Image too large (max 1MB)' }, 413);
+    if (buf.byteLength > maxBytes) return c.json({ success: false, error: 'Image too large (max 2MB)' }, 413);
 
     // JPEG magic and dimension checks
     if (!isJpeg(buf)) return c.json({ success: false, error: 'Invalid JPEG' }, 400);
@@ -117,4 +117,3 @@ export class ThemePreviewUpload extends OpenAPIRoute {
     return { success: true, url };
   }
 }
-

@@ -66,8 +66,12 @@
   , "restore-original": "还原原始"
   , "search-results": "搜索结果"
   , "no-results": "没有找到结果。"
+  , "all": "全部"
   , "remove-download": "移除下载"
   , "saved": "已保存"
   , "preview-uploaded": "预览已上传"
   , "uploading": "正在上传..."
+  , "downloaded-themes": "已下载的主题"
+  , "select": "选择"
+  , "image-too-large-2mb": "图片过大（最大 2MB）"
 }

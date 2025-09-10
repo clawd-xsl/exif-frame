@@ -20,7 +20,23 @@ export const UploadTab = () => {
   const [total, setTotal] = useState(0);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  const inFlightKeyRef = useRef<string | null>(null);
+  const pageRef = useRef(page);
+  const totalRef = useRef(total);
+  const themesRef = useRef<ThemeRecord[]>(themes);
+  const loadingInitialRef = useRef(loadingInitial);
+  const loadingMoreRef = useRef(loadingMore);
+
+  useEffect(() => { pageRef.current = page; }, [page]);
+  useEffect(() => { totalRef.current = total; }, [total]);
+  useEffect(() => { themesRef.current = themes; }, [themes]);
+  useEffect(() => { loadingInitialRef.current = loadingInitial; }, [loadingInitial]);
+  useEffect(() => { loadingMoreRef.current = loadingMore; }, [loadingMore]);
+
   const load = async (pageToLoad = 1, append = false) => {
+    const key = `${pageToLoad}`;
+    if (inFlightKeyRef.current === key) return;
+    inFlightKeyRef.current = key;
     if (!token) return;
     try {
       if (append) setLoadingMore(true);
@@ -35,6 +51,7 @@ export const UploadTab = () => {
     } finally {
       setLoadingInitial(false);
       setLoadingMore(false);
+      inFlightKeyRef.current = null;
     }
   };
 
@@ -56,25 +73,27 @@ export const UploadTab = () => {
     );
   }
 
-  const hasMore = themes.length < total;
+  // const hasMore = themes.length < total;
   const openDetail = (id: number) => navigate(`/my/themes/${id}`);
 
-  // Infinite scroll observer
+  // Infinite scroll observer (attach once per token)
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry.isIntersecting && !loadingMore && !loadingInitial && hasMore) {
-          load(page + 1, true);
+        const hasMoreCurrent = themesRef.current.length < totalRef.current;
+        if (entry.isIntersecting && !loadingMoreRef.current && !loadingInitialRef.current && hasMoreCurrent) {
+          load(pageRef.current + 1, true);
         }
       },
       { root: null, rootMargin: '200px' }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [loadingMore, loadingInitial, hasMore, page, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   function dedupeById(items: ThemeRecord[]): ThemeRecord[] {
     const seen = new Set<number>();
@@ -98,7 +117,7 @@ export const UploadTab = () => {
       ) : null}
 
       <List strongIos inset>
-        {loadingInitial ? <ListItem title={t('loading')} after={<Preloader />} /> : null}
+        {loadingInitial && themes.length === 0 ? <ListItem title={t('loading')} after={<Preloader />} /> : null}
         {themes.length === 0 && !loadingInitial ? <ListItem title={t('no-themes')} /> : null}
         {themes.map((th) => (
           <ListItem
