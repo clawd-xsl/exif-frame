@@ -30,12 +30,24 @@ export const SearchTab = () => {
   const loadingInitialRef = useRef(loadingInitial);
   const loadingMoreRef = useRef(loadingMore);
 
-  useEffect(() => { queryRef.current = query; }, [query]);
-  useEffect(() => { pageRef.current = page; }, [page]);
-  useEffect(() => { totalRef.current = total; }, [total]);
-  useEffect(() => { themesRef.current = themes; }, [themes]);
-  useEffect(() => { loadingInitialRef.current = loadingInitial; }, [loadingInitial]);
-  useEffect(() => { loadingMoreRef.current = loadingMore; }, [loadingMore]);
+  useEffect(() => {
+    queryRef.current = query;
+  }, [query]);
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
+  useEffect(() => {
+    totalRef.current = total;
+  }, [total]);
+  useEffect(() => {
+    themesRef.current = themes;
+  }, [themes]);
+  useEffect(() => {
+    loadingInitialRef.current = loadingInitial;
+  }, [loadingInitial]);
+  useEffect(() => {
+    loadingMoreRef.current = loadingMore;
+  }, [loadingMore]);
 
   const load = async (q: string, pageToLoad = 1, append = false) => {
     const key = `${q}|${pageToLoad}`;
@@ -109,11 +121,10 @@ export const SearchTab = () => {
   return (
     <>
       <Toolbar top>
-        <div style={{ flex: 1 }}>
-          <Searchbar value={query} onChange={(e) => setQuery((e.target as HTMLInputElement).value)} placeholder={t('search')} />
-        </div>
+        <Searchbar value={query} onChange={(e) => setQuery((e.target as HTMLInputElement).value)} placeholder={t('search')} />
       </Toolbar>
-      <Toolbar>
+
+      <Toolbar top>
         <Segmented strong>
           <SegmentedButton strong active={filter === 'all'} onClick={() => setFilter('all')}>
             {t('all')}
@@ -138,20 +149,20 @@ export const SearchTab = () => {
           const entry = downloads[th.id];
           const downloaded = !!entry;
           const modified = entry ? isModified(entry) : false;
-          const outdated = downloaded ? (th.updatedAt > (entry?.original.updatedAt || 0)) : false;
+          const outdated = downloaded ? th.updatedAt > (entry?.original.updatedAt || 0) : false;
           const status = downloaded
-            ? (modified && outdated
-                ? `${t('downloaded-modified')} · ${t('update-available')}`
-                : modified
-                ? t('downloaded-modified')
-                : outdated
-                ? t('update-available')
-                : t('downloaded'))
+            ? modified && outdated
+              ? `${t('downloaded-modified')} · ${t('update-available')}`
+              : modified
+              ? t('downloaded-modified')
+              : outdated
+              ? t('update-available')
+              : t('downloaded')
             : undefined;
           return (
             <ListItem
               key={th.id}
-            media={th.previewImageUrl ? <img src={th.previewImageUrl} alt="preview" width={44} height={44} /> : <RiImageLine size={28} />}
+              media={th.previewImageUrl ? <img src={th.previewImageUrl} alt="preview" width={44} height={44} /> : <RiImageLine size={28} />}
               title={th.title}
               subtitle={(th.ownerNickname ? th.ownerNickname : '') + (th.description ? (th.ownerNickname ? ' · ' : '') + th.description : '') || undefined}
               after={
