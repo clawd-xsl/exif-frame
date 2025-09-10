@@ -1,4 +1,4 @@
-import { Block, BlockTitle, Button, Card, List, ListItem, Navbar, NavbarBackLink, Page, Preloader, Popup } from 'konsta/react';
+import { Block, BlockTitle, Button, Card, List, ListItem, Navbar, NavbarBackLink, Page, Preloader } from 'konsta/react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,6 @@ const ThemePublicPage = () => {
   const [theme, setTheme] = useState<ThemeRecord | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
 
   const downloads = useDownloadsStore((s) => s.entries);
   const setDownloaded = useDownloadsStore((s) => s.setDownloaded);
@@ -57,7 +56,7 @@ const ThemePublicPage = () => {
       {theme ? (
         <>
           {theme.previewImageUrl ? (
-            <Card className="m-4" onClick={() => setPreviewOpen(true)}>
+            <Card className="m-4">
               <img src={theme.previewImageUrl} alt="preview" style={{ width: '100%', maxHeight: '60vh', objectFit: 'contain', display: 'block' }} />
             </Card>
           ) : (
@@ -65,17 +64,6 @@ const ThemePublicPage = () => {
               <RiImageLine size={64} />
             </Card>
           )}
-
-          <Popup opened={previewOpen} onBackdropClick={() => setPreviewOpen(false)}>
-            <div className="w-screen h-screen bg-white dark:bg-black flex items-center justify-center relative">
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-base font-medium text-neutral-900 dark:text-white">
-                <Button clear onClick={() => setPreviewOpen(false)}>
-                  {t('close')}
-                </Button>
-              </div>
-              {theme.previewImageUrl ? <img src={theme.previewImageUrl} alt="preview-full" style={{ maxWidth: '100%', maxHeight: '100%' }} /> : null}
-            </div>
-          </Popup>
 
           <Block strong inset>
             {(() => {

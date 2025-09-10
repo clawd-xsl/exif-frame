@@ -22,32 +22,41 @@ export const GalleryTab = () => {
     <>
       <Navbar title={t('gallery')} />
 
-      {/* Floating selected theme info above tabbar/toolbars */}
-      <div className="fixed left-0 right-0 bottom-24 z-10 px-4 pointer-events-none">
-        <div className="pointer-events-auto">
-          <List strongIos inset>
-          <ListItem
-              title={t('selected-theme')}
-              subtitle={selected ? selected.original.title : t('none')}
-              after={<Button small clear onClick={() => { setMainTab(1); setThemeSubTab(0); }}>{t('edit-in-library')}</Button>}
-            />
-          </List>
-        </div>
-      </div>
-
       <PicturesGrid />
 
       {pictures.length === 0 ? (
-        <div className="flex items-center justify-center py-2">
+        <div className="flex items-center justify-center py-10">
           <div className="text-neutral-500 dark:text-neutral-400 text-sm font-medium select-none">{t('please-upload-the-photo')}</div>
         </div>
       ) : (
-        <div className="flex items-center justify-center py-2">
+        <div className="flex items-center justify-center py-10">
           <div className="text-neutral-500 dark:text-neutral-400 text-sm font-medium select-none">{t('N-photos-have-been-loaded').replace('{N}', pictures.length.toLocaleString())}</div>
         </div>
       )}
 
       <Toolbar className="bottom-12 fixed">
+        <div className="fixed left-0 right-0 bottom-20 z-10 px-4 pointer-events-none">
+          <div className="pointer-events-auto">
+            <List strongIos inset>
+              <ListItem
+                title={t('selected-theme')}
+                subtitle={selected ? selected.original.title : t('none')}
+                after={
+                  <Button
+                    small
+                    clear
+                    onClick={() => {
+                      setMainTab(1);
+                      setThemeSubTab(0);
+                    }}
+                  >
+                    {t('edit-in-library')}
+                  </Button>
+                }
+              />
+            </List>
+          </div>
+        </div>
         <UploadPicturesButton />
         <DownloadAllPicturesButton />
       </Toolbar>
