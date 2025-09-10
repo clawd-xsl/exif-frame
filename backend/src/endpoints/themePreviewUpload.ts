@@ -51,7 +51,7 @@ function getJpegDimensions(bytes: Uint8Array): { width: number; height: number }
 export class ThemePreviewUpload extends OpenAPIRoute {
   schema = {
     tags: ["Themes"],
-    summary: "Upload preview image for a theme (JPEG, <=2MB, max 4096px)",
+    summary: "Upload preview image for a theme (JPEG, <=2MB, max 8192px)",
     request: {
       params: z.object({ id: Num() }),
     },
@@ -102,9 +102,9 @@ export class ThemePreviewUpload extends OpenAPIRoute {
     const dims = getJpegDimensions(buf);
     if (!dims) return c.json({ success: false, error: 'Cannot read JPEG dimensions' }, 400);
     const { width, height } = dims;
-    const maxDim = 4096;
+    const maxDim = 8192;
     if (width <= 0 || height <= 0) return c.json({ success: false, error: 'Invalid image size' }, 400);
-    if (width > maxDim || height > maxDim) return c.json({ success: false, error: 'Image dimensions too large (max 4096px)' }, 400);
+    if (width > maxDim || height > maxDim) return c.json({ success: false, error: 'Image dimensions too large (max 8192px)' }, 400);
 
     // Store in R2
     const key = `themes/${id}/preview.jpg`;

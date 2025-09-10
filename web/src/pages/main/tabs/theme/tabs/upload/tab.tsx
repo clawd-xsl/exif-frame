@@ -33,6 +33,8 @@ export const UploadTab = () => {
   useEffect(() => { loadingInitialRef.current = loadingInitial; }, [loadingInitial]);
   useEffect(() => { loadingMoreRef.current = loadingMore; }, [loadingMore]);
 
+  const clearAuth = useAuthStore((s) => s.clearAuth);
+
   const load = async (pageToLoad = 1, append = false) => {
     const key = `${pageToLoad}`;
     if (inFlightKeyRef.current === key) return;
@@ -47,7 +49,14 @@ export const UploadTab = () => {
       setPage(res.page);
       setThemes((prev) => (append ? dedupeById([...prev, ...res.themes]) : res.themes));
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load');
+      const msg = e instanceof Error ? e.message : 'Failed to load';
+      if (msg === 'Unauthorized') {
+        // token invalid/expired -> clear and show login prompt
+        clearAuth();
+        inFlightKeyRef.current = null;
+        return;
+      }
+      setError(msg);
     } finally {
       setLoadingInitial(false);
       setLoadingMore(false);

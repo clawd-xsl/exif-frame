@@ -25,6 +25,7 @@ export class ThemeCreate extends OpenAPIRoute {
     },
     responses: {
       "200": { description: "Created theme", content: { "application/json": { schema: z.object({ success: Bool(), id: z.number() }) } } },
+      "400": { description: "Bad Request" },
       "401": { description: "Unauthorized" },
       "403": { description: "Forbidden" },
     },
@@ -39,6 +40,10 @@ export class ThemeCreate extends OpenAPIRoute {
     try { payload = await verifyJWT(token, c.env.JWT_SECRET); } catch { return new Response("Unauthorized", { status: 401 }); }
     const ownerId = Number(payload.sub);
     const now = Date.now();
+    // Validate non-empty assets if provided
+    if (data.body.assets !== undefined && data.body.assets !== null && String(data.body.assets).trim().length === 0) {
+      return c.json({ success: false, error: 'assets must not be empty' }, 400);
+    }
     const id = await run(
       c.env.DB,
       `INSERT INTO themes (owner_member_id, title, description, preview_image_url, svg, assets, download_count, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`,

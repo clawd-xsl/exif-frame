@@ -4,6 +4,8 @@ import { persist } from 'zustand/middleware';
 interface ThemeStore {
   svg: string;
   setSvg: (svg: string) => void;
+  assets: string;
+  setAssets: (assets: string) => void;
 }
 
 export const useThemeStore = create<ThemeStore>()(
@@ -14,11 +16,14 @@ export const useThemeStore = create<ThemeStore>()(
   <image x="0" y="0" width="${'${'}IMAGE_WIDTH}" height="${'${'}IMAGE_HEIGHT}" xlink:href="${'${'}IMAGE_DATA}" />
 </svg>`.trimStart(),
       setSvg: (svg) => set({ svg }),
+      assets: '',
+      setAssets: (assets) => set({ assets }),
     }),
     {
       name: 'exif-frame-theme',
       partialize: (state) => ({
         svg: state.svg,
+        assets: state.assets,
       }),
     }
   )

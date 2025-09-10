@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 export const DownloadAllPicturesButton = () => {
   const { t } = useTranslation();
   const { pictures } = usePictureStore();
-  const { svg } = useThemeStore();
+  const { svg, assets } = useThemeStore();
   const { webpMode, maintainExifMetadata } = useSettingStore();
   const { setLoading } = useLoadingStore();
 
@@ -23,7 +23,7 @@ export const DownloadAllPicturesButton = () => {
       const fileExtension = webpMode ? 'webp' : 'jpeg';
       for (const picture of pictures) {
         const dumpedExifMetadata = maintainExifMetadata ? await dumpExifMetadata(await picture.loadDataUrl()) : null;
-        const convertedImage = webpMode ? await SvgConverter.toWebp(svg, picture) : await SvgConverter.toJpeg(svg, picture);
+        const convertedImage = webpMode ? await SvgConverter.toWebp(svg, picture, assets) : await SvgConverter.toJpeg(svg, picture, assets);
         const blob = new Blob([dumpedExifMetadata ? await replaceExifMetadata(convertedImage, dumpedExifMetadata) : (dumpedExifMetadata as BlobPart)], { type: `image/${fileExtension}` });
         const url = URL.createObjectURL(blob);
         const baseName = picture.file.name.replace(/\.[^.]+$/, '');

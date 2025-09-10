@@ -71,6 +71,8 @@
   , "saved": "保存しました"
   , "preview-uploaded": "プレビューをアップロードしました"
   , "uploading": "アップロード中..."
+  , "update-available": "アップデートあり"
+  , "update-to-latest": "最新に更新"
   , "downloaded-themes": "ダウンロードしたテーマ"
   , "select": "選択"
   , "image-too-large-2mb": "画像サイズが大きすぎます（最大 2MB）"

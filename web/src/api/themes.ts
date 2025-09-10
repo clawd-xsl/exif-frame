@@ -5,6 +5,7 @@ const API_BASE = 'https://api-exif-frame.yuru.cam';
 export interface ThemeRecord {
   id: number;
   ownerMemberId: number;
+  ownerNickname?: string | null;
   title: string;
   description?: string | null;
   previewImageUrl?: string | null;
@@ -59,7 +60,15 @@ export async function fetchMyThemes(token: string, params?: { page?: number; pag
   const res = await fetch(`${API_BASE}/api/my/themes${search.toString() ? `?${search.toString()}` : ''}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error('Failed to load themes');
+  if (!res.ok) {
+    if (res.status === 401) throw new Error('Unauthorized');
+    try {
+      const data = (await res.json()) as any;
+      throw new Error(data?.error || 'Failed to load themes');
+    } catch {
+      throw new Error('Failed to load themes');
+    }
+  }
   return (await res.json()) as ThemeListResponse;
 }
 

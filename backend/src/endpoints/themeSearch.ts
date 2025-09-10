@@ -49,7 +49,7 @@ export class ThemeSearch extends OpenAPIRoute {
     const params: unknown[] = [];
 
     if (ownerMemberId !== undefined && ownerMemberId !== null) {
-      where.push("owner_member_id = ?");
+      where.push("t.owner_member_id = ?");
       params.push(ownerMemberId);
     }
 
@@ -61,39 +61,49 @@ export class ThemeSearch extends OpenAPIRoute {
         .filter((v) => Number.isFinite(v));
       if (idsList.length > 50) idsList = idsList.slice(0, 50);
       if (idsList.length > 0) {
-        where.push(`id IN (${idsList.map(() => "?").join(",")})`);
+        where.push(`t.id IN (${idsList.map(() => "?").join(",")})`);
         params.push(...idsList);
       }
     }
 
     if (titleParam.length >= 1) {
-      const t = titleParam.slice(0, 64);
-      where.push(`title LIKE ?`);
-      params.push(`%${t}%`);
+      const tt = titleParam.slice(0, 64);
+      where.push(`t.title LIKE ?`);
+      params.push(`%${tt}%`);
     }
 
     const dir = (order?.toLowerCase() === "asc" ? "ASC" : "DESC");
-    let orderBy = `id DESC`;
+    let orderBy = `t.id DESC`;
     if ((sort ?? "").toLowerCase() === "downloadcount") {
-      orderBy = `download_count ${dir}, id DESC`;
+      orderBy = `t.download_count ${dir}, t.id DESC`;
     } else {
-      orderBy = `id ${dir}`;
+      orderBy = `t.id ${dir}`;
     }
 
     const offset = (safePage - 1) * safeSize;
 
-    const countRow = await queryOne<{ count: number }>(
-      c.env.DB,
-      `SELECT COUNT(*) as count FROM themes WHERE ${where.join(" AND ")}`,
-      ...params
-    );
+    const countRow = await queryOne<{ count: number }>(c.env.DB, `SELECT COUNT(*) as count FROM themes t WHERE ${where.join(" AND ")}`, ...params);
     const total = Number(countRow?.count ?? 0);
 
     const rows = await queryAll<any>(
       c.env.DB,
-      `SELECT id, owner_member_id as ownerMemberId, title, description, preview_image_url as previewImageUrl, svg, assets, download_count as downloadCount, created_at as createdAt, updated_at as updatedAt FROM themes WHERE ${where.join(
-        " AND "
-      )} ORDER BY ${orderBy} LIMIT ? OFFSET ?`,
+      `SELECT 
+        t.id,
+        t.owner_member_id as ownerMemberId,
+        m.nickname as ownerNickname,
+        t.title,
+        t.description,
+        t.preview_image_url as previewImageUrl,
+        t.svg,
+        t.assets,
+        t.download_count as downloadCount,
+        t.created_at as createdAt,
+        t.updated_at as updatedAt
+      FROM themes t
+      LEFT JOIN members m ON m.id = t.owner_member_id
+      WHERE ${where.join(' AND ')}
+      ORDER BY ${orderBy}
+      LIMIT ? OFFSET ?`,
       ...params,
       safeSize,
       offset

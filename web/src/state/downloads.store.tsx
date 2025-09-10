@@ -10,16 +10,19 @@ export interface DownloadedThemeEntry {
 
 interface DownloadsState {
   entries: Record<number, DownloadedThemeEntry>;
+  selectedId: number | null;
   setDownloaded: (theme: ThemeRecord) => void;
   redownload: (theme: ThemeRecord) => void;
   updateLocal: (id: number, updater: (prev: ThemeRecord) => ThemeRecord) => void;
   remove: (id: number) => void;
+  setSelectedId: (id: number | null) => void;
 }
 
 export const useDownloadsStore = create<DownloadsState>()(
   persist(
     (set) => ({
       entries: {},
+      selectedId: null,
       setDownloaded: (theme) =>
         set((state) => ({
           entries: {
@@ -49,12 +52,14 @@ export const useDownloadsStore = create<DownloadsState>()(
         set((state) => {
           const next = { ...state.entries };
           delete next[id];
-          return { entries: next };
+          const selectedId = state.selectedId === id ? null : state.selectedId;
+          return { entries: next, selectedId };
         }),
+      setSelectedId: (id) => set({ selectedId: id }),
     }),
     {
       name: 'exif-frame-downloads',
-      partialize: (state) => ({ entries: state.entries }),
+      partialize: (state) => ({ entries: state.entries, selectedId: state.selectedId }),
     }
   )
 );

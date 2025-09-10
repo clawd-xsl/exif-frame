@@ -19,7 +19,21 @@ export class ThemeFetch extends OpenAPIRoute {
     const id = data.params.id;
     const row = await queryOne<any>(
       c.env.DB,
-      `SELECT id, owner_member_id as ownerMemberId, title, description, preview_image_url as previewImageUrl, svg, assets, download_count as downloadCount, created_at as createdAt, updated_at as updatedAt FROM themes WHERE id = ?`,
+      `SELECT 
+        t.id,
+        t.owner_member_id as ownerMemberId,
+        m.nickname as ownerNickname,
+        t.title,
+        t.description,
+        t.preview_image_url as previewImageUrl,
+        t.svg,
+        t.assets,
+        t.download_count as downloadCount,
+        t.created_at as createdAt,
+        t.updated_at as updatedAt
+      FROM themes t
+      LEFT JOIN members m ON m.id = t.owner_member_id
+      WHERE t.id = ?`,
       id
     );
     if (!row) return new Response("Not Found", { status: 404 });

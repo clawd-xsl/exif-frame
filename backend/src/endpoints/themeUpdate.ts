@@ -26,6 +26,7 @@ export class ThemeUpdate extends OpenAPIRoute {
     },
     responses: {
       "200": { description: "Updated", content: { "application/json": { schema: z.object({ success: Bool() }) } } },
+      "400": { description: "Bad Request" },
       "401": { description: "Unauthorized" },
       "403": { description: "Forbidden" },
     },
@@ -50,6 +51,10 @@ export class ThemeUpdate extends OpenAPIRoute {
     const updates: string[] = [];
     const params: unknown[] = [];
     const b = data.body ?? {};
+    // Validate non-empty assets if provided
+    if (b.assets !== undefined && b.assets !== null && String(b.assets).trim().length === 0) {
+      return c.json({ success: false, error: 'assets must not be empty' }, 400);
+    }
     if (b.title !== undefined) { updates.push('title = ?'); params.push(b.title); }
     if (b.description !== undefined) { updates.push('description = ?'); params.push(b.description); }
     if (b.previewImageUrl !== undefined) { updates.push('preview_image_url = ?'); params.push(b.previewImageUrl); }

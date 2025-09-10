@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 export const PicturesGrid = () => {
   const { t } = useTranslation();
   const { pictures } = usePictureStore();
-  const { svg } = useThemeStore();
+  const { svg, assets } = useThemeStore();
   const { webpMode, maintainExifMetadata } = useSettingStore();
   const { setLoading } = useLoadingStore();
 
@@ -22,7 +22,7 @@ export const PicturesGrid = () => {
     try {
       const dumpedExifMetadata = maintainExifMetadata ? await dumpExifMetadata(await picture.loadDataUrl()) : null;
       const fileExtension = webpMode ? 'webp' : 'jpeg';
-      const convertedImage = webpMode ? await SvgConverter.toWebp(svg, picture) : await SvgConverter.toJpeg(svg, picture);
+      const convertedImage = webpMode ? await SvgConverter.toWebp(svg, picture, assets) : await SvgConverter.toJpeg(svg, picture, assets);
       const blob = new Blob([dumpedExifMetadata ? await replaceExifMetadata(convertedImage, dumpedExifMetadata) : (convertedImage as BlobPart)], { type: `image/${fileExtension}` });
       const url = URL.createObjectURL(blob);
       await download(`exif_frame_${picture.file.name.replace(/\.[^.]+$/, '')}.${fileExtension}`, url);

@@ -138,13 +138,22 @@ export const SearchTab = () => {
           const entry = downloads[th.id];
           const downloaded = !!entry;
           const modified = entry ? isModified(entry) : false;
-          const status = downloaded ? (modified ? t('downloaded-modified') : t('downloaded')) : undefined;
+          const outdated = downloaded ? (th.updatedAt > (entry?.original.updatedAt || 0)) : false;
+          const status = downloaded
+            ? (modified && outdated
+                ? `${t('downloaded-modified')} · ${t('update-available')}`
+                : modified
+                ? t('downloaded-modified')
+                : outdated
+                ? t('update-available')
+                : t('downloaded'))
+            : undefined;
           return (
             <ListItem
               key={th.id}
             media={th.previewImageUrl ? <img src={th.previewImageUrl} alt="preview" width={44} height={44} /> : <RiImageLine size={28} />}
               title={th.title}
-              subtitle={th.description || undefined}
+              subtitle={(th.ownerNickname ? th.ownerNickname : '') + (th.description ? (th.ownerNickname ? ' · ' : '') + th.description : '') || undefined}
               after={
                 <span>
                   <RiDownloadLine size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> {th.downloadCount}

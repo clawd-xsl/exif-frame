@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moduleFactory, { WebPModule } from 'webp-encoder-wasm';
 import { replaceWithSafeEvalAndFetchBase64 } from './replace-with-safe-eval-and-fetch-base64';
 import SvgWasm from 'svg-wasm';
@@ -103,22 +104,16 @@ export class SvgConverter {
     };
   }
 
-  static async toJpeg(svg: string, picture: Picture): Promise<Uint8Array> {
+  static async toJpeg(svg: string, picture: Picture, assetsJson?: string): Promise<Uint8Array> {
     const { convertedSvg, width, height } = await SvgConverter.preprocessing(svg, picture);
-    return SvgWasm.svg2jpeg(convertedSvg, {
-      width,
-      height,
-      fonts: [new Uint8Array(await (await fetch('/Pretendard-Light.ttf')).arrayBuffer())],
-    });
+    const fonts = await loadFontsFromAssets(assetsJson);
+    return SvgWasm.svg2jpeg(convertedSvg, { width, height, fonts });
   }
 
-  static async toWebp(svg: string, picture: Picture): Promise<Uint8Array> {
+  static async toWebp(svg: string, picture: Picture, assetsJson?: string): Promise<Uint8Array> {
     const { convertedSvg, width, height } = await SvgConverter.preprocessing(svg, picture);
-    const pixels = await SvgWasm.svg2pixels(convertedSvg, {
-      width,
-      height,
-      fonts: [new Uint8Array(await (await fetch('/Pretendard-Light.ttf')).arrayBuffer())],
-    });
+    const fonts = await loadFontsFromAssets(assetsJson);
+    const pixels = await SvgWasm.svg2pixels(convertedSvg, { width, height, fonts });
     return webpModule.encode(pixels as BufferSource, width, height, {
       quality: 90, // 0~100: 인코딩 품질. 값이 높을수록 품질은 좋으나 파일 크기는 커짐.
       target_size: 0, // 목표 파일 크기(바이트 단위). 0이면 목표 크기를 적용하지 않음.
@@ -148,5 +143,38 @@ export class SvgConverter {
       use_delta_palette: 0, // 델타 팔레트 기능 사용 여부(색상 최적화). 0이면 사용하지 않음.
       use_sharp_yuv: 0, // YUV 변환 시 더 선명하게 처리할지 여부. 0이면 기본 처리 방식 사용.
     })!;
+  }
+}
+
+async function loadFontsFromAssets(assetsJson?: string): Promise<Uint8Array[]> {
+  try {
+    if (!assetsJson) return [];
+    const parsed = JSON.parse(assetsJson);
+    const fontsVal = (parsed as any)?.fonts;
+    let urls: string[] = [];
+    if (Array.isArray(fontsVal)) {
+      // New format: ["https://...", "https://..."]
+      if (fontsVal.every((v) => typeof v === 'string')) {
+        urls = fontsVal as string[];
+      } else {
+        // Backward compatibility: [{ url: "..." }]
+        urls = (fontsVal as Array<any>).map((it) => (it && typeof it.url === 'string' ? it.url : undefined)).filter((u): u is string => typeof u === 'string' && u.length > 0);
+      }
+    }
+    if (urls.length === 0) return [];
+    const bufs: Uint8Array[] = [];
+    for (const url of urls) {
+      try {
+        const res = await fetch(url);
+        const ab = await res.arrayBuffer();
+        bufs.push(new Uint8Array(ab));
+      } catch (e) {
+        console.warn('Failed to load font url', url, e);
+      }
+    }
+    return bufs;
+  } catch (e) {
+    // Ignore parse errors and return empty -> no fonts applied
+    return [];
   }
 }

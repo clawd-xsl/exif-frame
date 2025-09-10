@@ -56,11 +56,11 @@ const ThemePublicPage = () => {
       {theme ? (
         <>
           {theme.previewImageUrl ? (
-            <Card footer={theme.description || undefined} className="m-4">
+            <Card footer={(theme.ownerNickname ? theme.ownerNickname : '') + (theme.description ? (theme.ownerNickname ? ' · ' : '') + theme.description : '') || undefined} className="m-4">
               <img src={theme.previewImageUrl} alt="preview" style={{ width: '100%', display: 'block' }} />
             </Card>
           ) : (
-            <Card footer={theme.description || undefined} className="m-4">
+            <Card footer={(theme.ownerNickname ? theme.ownerNickname : '') + (theme.description ? (theme.ownerNickname ? ' · ' : '') + theme.description : '') || undefined} className="m-4">
               <RiImageLine size={64} />
             </Card>
           )}
@@ -70,6 +70,7 @@ const ThemePublicPage = () => {
               const entry = downloads[theme.id];
               const downloaded = !!entry;
               const modified = entry ? isModified(entry) : false;
+              const outdated = downloaded ? (theme.updatedAt > (entry!.original.updatedAt || 0)) : false;
               if (!downloaded) {
                 return (
                   <Button
@@ -91,9 +92,32 @@ const ThemePublicPage = () => {
               return (
                 <>
                   <Button large disabled>
-                    {modified ? t('downloaded-modified') : t('downloaded')}
+                    {modified && outdated
+                      ? `${t('downloaded-modified')} · ${t('update-available')}`
+                      : modified
+                      ? t('downloaded-modified')
+                      : outdated
+                      ? t('update-available')
+                      : t('downloaded')}
                   </Button>
-                  {modified ? (
+                  {outdated ? (
+                    <Button
+                      large
+                      clear
+                      onClick={async () => {
+                        try {
+                          const inc = await incrementDownload(theme.id);
+                          const latest = await fetchTheme(theme.id);
+                          setTheme({ ...latest.theme, downloadCount: inc.downloadCount });
+                          setDownloaded(latest.theme);
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }}
+                    >
+                      {t('update-to-latest')}
+                    </Button>
+                  ) : modified ? (
                     <Button
                       large
                       clear
