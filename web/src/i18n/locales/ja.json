@@ -18,62 +18,62 @@
   "please-upload-the-photo": "写真をアップロードしてください。",
   "N-photos-have-been-loaded": "{N}枚の写真が読み込まれました。",
   "wait-a-moment": "少々お待ちください...",
-  "photo-conversion-error": "写真の変換中にエラーが発生しました。"
-  , "back": "戻る"
-  , "login": "ログイン"
-  , "register": "新規登録"
-  , "logout": "ログアウト"
-  , "my-info": "マイ情報"
-  , "register-or-login": "新規登録 または ログイン"
-  , "email": "メール"
-  , "password": "パスワード"
-  , "nickname": "ニックネーム"
-  , "login-with-email": "メールでログイン"
-  , "enter-info": "情報を入力"
-  , "min-8-chars": "最低8文字"
-  , "logging-in": "ログイン中..."
-  , "registering": "登録中..."
-  , "dont-have-account": "アカウントをお持ちでないですか？"
-  , "already-have-account": "すでにアカウントをお持ちですか？"
-  , "login-failed": "ログインに失敗しました"
-  , "register-failed": "登録に失敗しました"
-  , "login-required": "ログインが必要です。"
-  , "my-themes": "自分のテーマ"
-  , "refresh": "更新"
-  , "loading": "読み込み中..."
-  , "no-themes": "テーマがありません。"
-  , "upload-preview": "プレビューをアップロード"
-  , "edit": "編集"
-  , "title": "タイトル"
-  , "description": "説明"
-  , "save": "保存"
-  , "saving": "保存中..."
-  , "cancel": "キャンセル"
-  , "create-theme": "新しいテーマを作成"
-  , "create": "作成"
-  , "creating": "作成中..."
-  , "delete": "削除"
-  , "deleting": "削除中..."
-  , "change": "変更"
-  , "not-found": "見つかりません。"
-  , "svg": "SVG"
-  , "assets": "アセット"
-  , "assets-invalid-json": "有効なJSONである必要があります。"
-  , "download": "ダウンロード"
-  , "downloaded": "ダウンロード済み"
-  , "downloaded-modified": "ダウンロード済み（編集あり）"
-  , "redownload": "再ダウンロード"
-  , "restore-original": "元に戻す"
-  , "search-results": "検索結果"
-  , "no-results": "結果がありません。"
-  , "all": "すべて"
-  , "remove-download": "ダウンロードを削除"
-  , "saved": "保存しました"
-  , "preview-uploaded": "プレビューをアップロードしました"
-  , "uploading": "アップロード中..."
-  , "update-available": "アップデートあり"
-  , "update-to-latest": "最新に更新"
-  , "downloaded-themes": "ダウンロードしたテーマ"
-  , "select": "選択"
-  , "image-too-large-2mb": "画像サイズが大きすぎます（最大 2MB）"
+  "photo-conversion-error": "写真の変換中にエラーが発生しました。",
+  "back": "戻る",
+  "login": "ログイン",
+  "register": "新規登録",
+  "logout": "ログアウト",
+  "my-info": "マイ情報",
+  "register-or-login": "新規登録 または ログイン",
+  "email": "メール",
+  "password": "パスワード",
+  "nickname": "ニックネーム",
+  "login-with-email": "メールでログイン",
+  "enter-info": "情報を入力",
+  "min-8-chars": "最低8文字",
+  "logging-in": "ログイン中...",
+  "registering": "登録中...",
+  "dont-have-account": "アカウントをお持ちでないですか？",
+  "already-have-account": "すでにアカウントをお持ちですか？",
+  "login-failed": "ログインに失敗しました",
+  "register-failed": "登録に失敗しました",
+  "login-required": "ログインが必要です。",
+  "my-themes": "自分のテーマ",
+  "refresh": "更新",
+  "loading": "読み込み中...",
+  "no-themes": "テーマがありません。",
+  "upload-preview": "プレビューをアップロード",
+  "edit": "編集",
+  "title": "タイトル",
+  "description": "説明",
+  "save": "保存",
+  "saving": "保存中...",
+  "cancel": "キャンセル",
+  "create-theme": "新しいテーマを作成",
+  "create": "作成",
+  "creating": "作成中...",
+  "delete": "削除",
+  "deleting": "削除中...",
+  "change": "変更",
+  "not-found": "見つかりません。",
+  "svg": "SVG",
+  "assets": "アセット",
+  "assets-invalid-json": "有効なJSONである必要があります。",
+  "download": "ダウンロード",
+  "downloaded": "ダウンロード済み",
+  "downloaded-modified": "ダウンロード済み（編集あり）",
+  "redownload": "再ダウンロード",
+  "restore-original": "元に戻す",
+  "search-results": "検索結果",
+  "no-results": "結果がありません。",
+  "all": "すべて",
+  "remove-download": "ダウンロードを削除",
+  "saved": "保存しました",
+  "preview-uploaded": "プレビューをアップロードしました",
+  "uploading": "アップロード中...",
+  "update-available": "アップデートあり",
+  "update-to-latest": "最新に更新",
+  "downloaded-themes": "ダウンロードしたテーマ",
+  "select": "選択",
+  "image-too-large-2mb": "画像サイズが大きすぎます（最大 2MB）"
 }

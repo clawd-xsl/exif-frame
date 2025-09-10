@@ -18,62 +18,62 @@
   "please-upload-the-photo": "请上传照片。",
   "N-photos-have-been-loaded": "已加载 {N} 张照片。",
   "wait-a-moment": "请稍候...",
-  "photo-conversion-error": "照片转换时发生错误。"
-  , "back": "返回"
-  , "login": "登录"
-  , "register": "注册"
-  , "logout": "登出"
-  , "my-info": "我的信息"
-  , "register-or-login": "注册或登录"
-  , "email": "邮箱"
-  , "password": "密码"
-  , "nickname": "昵称"
-  , "login-with-email": "使用邮箱登录"
-  , "enter-info": "输入信息"
-  , "min-8-chars": "至少 8 个字符"
-  , "logging-in": "正在登录..."
-  , "registering": "正在注册..."
-  , "dont-have-account": "还没有账号？"
-  , "already-have-account": "已有账号？"
-  , "login-failed": "登录失败"
-  , "register-failed": "注册失败"
-  , "login-required": "请先登录。"
-  , "my-themes": "我的主题"
-  , "refresh": "刷新"
-  , "loading": "加载中..."
-  , "no-themes": "没有主题。"
-  , "upload-preview": "上传预览图"
-  , "edit": "编辑"
-  , "title": "标题"
-  , "description": "描述"
-  , "save": "保存"
-  , "saving": "保存中..."
-  , "cancel": "取消"
-  , "create-theme": "创建新主题"
-  , "create": "创建"
-  , "creating": "创建中..."
-  , "delete": "删除"
-  , "deleting": "删除中..."
-  , "change": "更改"
-  , "not-found": "未找到。"
-  , "svg": "SVG"
-  , "assets": "资源"
-  , "assets-invalid-json": "必须是有效的 JSON。"
-  , "download": "下载"
-  , "downloaded": "已下载"
-  , "downloaded-modified": "已下载（已修改）"
-  , "redownload": "重新下载"
-  , "restore-original": "还原原始"
-  , "search-results": "搜索结果"
-  , "no-results": "没有找到结果。"
-  , "all": "全部"
-  , "remove-download": "移除下载"
-  , "saved": "已保存"
-  , "preview-uploaded": "预览已上传"
-  , "uploading": "正在上传..."
-  , "update-available": "有可用更新"
-  , "update-to-latest": "更新到最新"
-  , "downloaded-themes": "已下载的主题"
-  , "select": "选择"
-  , "image-too-large-2mb": "图片过大（最大 2MB）"
+  "photo-conversion-error": "照片转换时发生错误。",
+  "back": "返回",
+  "login": "登录",
+  "register": "注册",
+  "logout": "登出",
+  "my-info": "我的信息",
+  "register-or-login": "注册或登录",
+  "email": "邮箱",
+  "password": "密码",
+  "nickname": "昵称",
+  "login-with-email": "使用邮箱登录",
+  "enter-info": "输入信息",
+  "min-8-chars": "至少 8 个字符",
+  "logging-in": "正在登录...",
+  "registering": "正在注册...",
+  "dont-have-account": "还没有账号？",
+  "already-have-account": "已有账号？",
+  "login-failed": "登录失败",
+  "register-failed": "注册失败",
+  "login-required": "请先登录。",
+  "my-themes": "我的主题",
+  "refresh": "刷新",
+  "loading": "加载中...",
+  "no-themes": "没有主题。",
+  "upload-preview": "上传预览图",
+  "edit": "编辑",
+  "title": "标题",
+  "description": "描述",
+  "save": "保存",
+  "saving": "保存中...",
+  "cancel": "取消",
+  "create-theme": "创建新主题",
+  "create": "创建",
+  "creating": "创建中...",
+  "delete": "删除",
+  "deleting": "删除中...",
+  "change": "更改",
+  "not-found": "未找到。",
+  "svg": "SVG",
+  "assets": "资源",
+  "assets-invalid-json": "必须是有效的 JSON。",
+  "download": "下载",
+  "downloaded": "已下载",
+  "downloaded-modified": "已下载（已修改）",
+  "redownload": "重新下载",
+  "restore-original": "还原原始",
+  "search-results": "搜索结果",
+  "no-results": "没有找到结果。",
+  "all": "全部",
+  "remove-download": "移除下载",
+  "saved": "已保存",
+  "preview-uploaded": "预览已上传",
+  "uploading": "正在上传...",
+  "update-available": "有可用更新",
+  "update-to-latest": "更新到最新",
+  "downloaded-themes": "已下载的主题",
+  "select": "选择",
+  "image-too-large-2mb": "图片过大（最大 2MB）"
 }
