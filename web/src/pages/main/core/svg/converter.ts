@@ -52,7 +52,16 @@ export class SvgConverter {
           // Replace the whole placeholder for values that must remain literal
           // - IMAGE_DATA: prevent secondary fetch/eval stage from touching data URLs
           // - EXPOSURE_TIME: values like "1/120" must not be evaluated as arithmetic
-          if (singleToken === 'IMAGE_DATA' || singleToken === 'EXPOSURE_TIME') {
+          if (
+            singleToken === 'IMAGE_DATA' ||
+            singleToken === 'EXPOSURE_TIME' ||
+            singleToken === 'YEAR' ||
+            singleToken === 'MONTH' ||
+            singleToken === 'DAY' ||
+            singleToken === 'HOUR' ||
+            singleToken === 'MINUTE' ||
+            singleToken === 'SECOND'
+          ) {
             replaceWhole = true;
             replacedInner = repls[singleToken];
           }
@@ -72,6 +81,35 @@ export class SvgConverter {
     };
 
     const toStr = (v: unknown) => (v === null || v === undefined ? '' : String(v));
+
+    // Extract EXIF date/time parts
+    const rawDateTime: string | undefined = exifMetadata?.DateTimeOriginal?.description as string | undefined;
+    let YEAR = '';
+    let MONTH = '';
+    let DAY = '';
+    let HOUR = '';
+    let MINUTE = '';
+    let SECOND = '';
+    let DATE_TIME_FMT = '';
+    if (rawDateTime) {
+      const [datePart, timePart] = rawDateTime.split(' ');
+      if (datePart) {
+        const d = datePart.split(':');
+        YEAR = d[0] || '';
+        MONTH = d[1] || '';
+        DAY = d[2] || '';
+      }
+      if (timePart) {
+        const t = timePart.split(':');
+        HOUR = t[0] || '';
+        MINUTE = t[1] || '';
+        SECOND = t[2] || '';
+      }
+      if (datePart) {
+        const yyyymmdd = datePart.split(':').join('-');
+        DATE_TIME_FMT = timePart ? `${yyyymmdd} ${timePart}` : yyyymmdd;
+      }
+    }
     const replacements: Record<string, string> = {
       IMAGE_WIDTH: toStr(image.width),
       IMAGE_HEIGHT: toStr(image.height),
@@ -91,13 +129,13 @@ export class SvgConverter {
       F_NUMBER: toStr(exifMetadata?.FNumber?.description?.substring(0, 5)?.replace('f/', '')),
       ISO: toStr(exifMetadata?.ISOSpeedRatings?.value),
       EXPOSURE_TIME: toStr(exifMetadata?.ExposureTime?.description),
-      DATE_TIME: exifMetadata?.DateTimeOriginal?.description
-        ? (() => {
-            const [date, time] = exifMetadata.DateTimeOriginal.description.split(' ');
-            const yyyymmdd = date.split(':').join('-');
-            return `${yyyymmdd} ${time}`;
-          })()
-        : '',
+      DATE_TIME: DATE_TIME_FMT,
+      YEAR,
+      MONTH,
+      DAY,
+      HOUR,
+      MINUTE,
+      SECOND,
     };
 
     const onlyInTpl = replaceInsidePlaceholders(svg, replacements);
