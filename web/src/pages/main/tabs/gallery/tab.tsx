@@ -5,7 +5,6 @@ import { PicturesGrid } from './components/pictures.grid';
 import { usePictureStore } from '../../state/picture.store';
 import { useTranslation } from 'react-i18next';
 import { DropPicturesOverlay } from './components/drop-pictures.overlay';
-import { DragUploadHint } from './components/drag-upload.hint';
 
 export const GalleryTab = () => {
   const { t } = useTranslation();
@@ -33,7 +32,6 @@ export const GalleryTab = () => {
       </Toolbar>
 
       <DropPicturesOverlay />
-      {pictures.length === 0 ? <DragUploadHint /> : null}
     </>
   );
 };
