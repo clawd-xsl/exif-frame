@@ -1,21 +1,40 @@
-name: Deploy
+name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  web-deploy:
-    environment: main
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
-      - uses: yurucam/deploy-cloudflare-pages@main
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          working-directory: web
-          project-name: exif-frame
-          output-directory: dist
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: cd web && npm ci
+      - run: cd web && npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
