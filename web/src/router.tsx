@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import TermAndConditionsPage from './pages/term-and-conditions';
 import PrivacyPolicyPage from './pages/privacy-policy';
 import ExportSettingsPage from './pages/setting/page';
@@ -13,7 +13,7 @@ const Router = () => {
   const { tabIndex } = useStore();
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route
           path="/"
@@ -31,7 +31,7 @@ const Router = () => {
         <Route path="/lab" element={<LabPage />} />
         <Route path="/metadata" element={<MetadataPage />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
