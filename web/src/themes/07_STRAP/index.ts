@@ -9,7 +9,7 @@ const supportLogo = new Map<string, HTMLImageElement>();
 
 const loadLogo = (pathname: string): HTMLImageElement => {
   const image = new Image();
-  image.src = import.meta.env.BASE_URL + pathname.replace(/^//, '');
+  image.src = import.meta.env.BASE_URL + pathname.replace(/^\//, '');
   return image;
 };
 
