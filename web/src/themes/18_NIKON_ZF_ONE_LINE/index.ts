@@ -89,7 +89,7 @@ const NIKON_ZF_ONE_LINE_OPTIONS: ThemeOption[] = [
   { id: 'PADDING_BOTTOM', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_LEFT', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_RIGHT', type: 'number', default: 0, description: 'px' },
-  { id: 'TEMPLATE_LEFT', type: 'string', default: 'Shot on  Nikon {NIKON_ZF_LOGO}  {LENS}' },
+  { id: 'TEMPLATE_LEFT', type: 'string', default: 'Nikon {NIKON_ZF_LOGO}  {LENS}' },
   { id: 'TEMPLATE_RIGHT', type: 'string', default: '{ISO}  {MM}  {F}  {SEC}' },
 ];
 
