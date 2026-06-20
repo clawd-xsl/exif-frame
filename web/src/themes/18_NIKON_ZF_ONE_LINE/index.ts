@@ -124,21 +124,21 @@ const NIKON_ZF_ONE_LINE_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput
 
   // Left - camera info
   context.textAlign = 'left';
-  context.font = `normal 500 ${FONT_SIZE}px Barlow`;
+  context.font = `normal 300 ${FONT_SIZE}px Barlow`;
   context.fillStyle = PRIMARY_TEXT_COLOR;
   drawTextWithInlineLogo(context, textLeft, FONT_SIZE, centerY, DARK_MODE, FONT_SIZE);
 
   // Center - artist (gray)
   if (ARTIST) {
     context.textAlign = 'center';
-    context.font = `normal 100 ${FONT_SIZE}px Barlow`;
+    context.font = `normal 300 ${FONT_SIZE}px Barlow`;
     context.fillStyle = SECONDARY_TEXT_COLOR;
     context.fillText(ARTIST, canvas.width / 2, centerY);
   }
 
   // Right - exposure info
   context.textAlign = 'right';
-  context.font = `normal 100 ${FONT_SIZE}px Barlow`;
+  context.font = `normal 300 ${FONT_SIZE}px Barlow`;
   context.fillStyle = PRIMARY_TEXT_COLOR;
   drawTextWithInlineLogo(context, textRight, canvas.width - FONT_SIZE, centerY, DARK_MODE, FONT_SIZE);
 
