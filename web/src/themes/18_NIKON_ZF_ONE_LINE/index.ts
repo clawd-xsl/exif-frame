@@ -84,29 +84,37 @@ const processTemplate = (
 };
 
 const NIKON_ZF_ONE_LINE_OPTIONS: ThemeOption[] = [
+  { id: 'ARTIST', type: 'string', default: '@_xsling_', description: 'your name (shown in gray below)' },
   { id: 'DARK_MODE', type: 'boolean', default: false, description: 'enable to use dark mode' },
+  { id: 'SECONDARY_TEXT_FONT_WEIGHT', type: 'range-slider', min: 100, max: 900, step: 100, default: 300, description: '100 - 900' },
   { id: 'PADDING_TOP', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_BOTTOM', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_LEFT', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_RIGHT', type: 'number', default: 0, description: 'px' },
   { id: 'TEMPLATE_LEFT', type: 'string', default: 'Nikon {NIKON_ZF_LOGO}  {LENS}' },
   { id: 'TEMPLATE_RIGHT', type: 'string', default: '{ISO}  {MM}  {F}  {SEC}' },
+  { id: 'TEMPLATE_ARTIST_RIGHT', type: 'string', default: '{TAKEN_AT}' },
 ];
 
 const NIKON_ZF_ONE_LINE_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Store) => {
+  const ARTIST = (input.get('ARTIST') as string).trim();
   const DARK_MODE = input.get('DARK_MODE') as boolean;
+  const SECONDARY_TEXT_FONT_WEIGHT = input.get('SECONDARY_TEXT_FONT_WEIGHT') as number;
   const PADDING_TOP = input.get('PADDING_TOP') as number;
-  const PADDING_BOTTOM = (input.get('PADDING_BOTTOM') as number) + 200;
+  const PADDING_BOTTOM = (input.get('PADDING_BOTTOM') as number) + 300;
   const PADDING_LEFT = input.get('PADDING_LEFT') as number;
   const PADDING_RIGHT = input.get('PADDING_RIGHT') as number;
   const TEMPLATE_LEFT = (input.get('TEMPLATE_LEFT') as string).trim();
   const TEMPLATE_RIGHT = (input.get('TEMPLATE_RIGHT') as string).trim();
+  const TEMPLATE_ARTIST_RIGHT = (input.get('TEMPLATE_ARTIST_RIGHT') as string).trim();
   const FONT_SIZE = 70;
   const BACKGROUND_COLOR = DARK_MODE ? '#000000' : '#ffffff';
-  const TEXT_COLOR = DARK_MODE ? '#ffffff' : '#000000';
+  const PRIMARY_TEXT_COLOR = DARK_MODE ? '#ffffff' : '#000000';
+  const SECONDARY_TEXT_COLOR = DARK_MODE ? '#888888' : '#333333';
 
   const textLeft = processTemplate(TEMPLATE_LEFT, photo, store);
   const textRight = processTemplate(TEMPLATE_RIGHT, photo, store);
+  const textArtistRight = processTemplate(TEMPLATE_ARTIST_RIGHT, photo, store);
 
   const canvas = sandbox(photo, {
     targetRatio: store.ratio,
@@ -116,18 +124,37 @@ const NIKON_ZF_ONE_LINE_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput
   });
 
   const context = canvas.getContext('2d')!;
-  context.fillStyle = TEXT_COLOR;
   context.textBaseline = 'middle';
 
-  // Right side - exposure info
-  context.textAlign = 'right';
-  context.font = `normal 500 ${FONT_SIZE}px Barlow`;
-  drawTextWithInlineLogo(context, textRight, canvas.width - FONT_SIZE, canvas.height - PADDING_BOTTOM / 2, DARK_MODE, FONT_SIZE);
-
-  // Left side - camera info with inline Zf logo
+  // Row 1 (top): camera info left, exposure right
+  // Left
   context.textAlign = 'left';
   context.font = `normal 500 ${FONT_SIZE}px Barlow`;
-  drawTextWithInlineLogo(context, textLeft, FONT_SIZE, canvas.height - PADDING_BOTTOM / 2, DARK_MODE, FONT_SIZE);
+  context.fillStyle = PRIMARY_TEXT_COLOR;
+  drawTextWithInlineLogo(context, textLeft, FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2, DARK_MODE, FONT_SIZE);
+
+  // Right
+  context.textAlign = 'right';
+  context.font = `normal 500 ${FONT_SIZE}px Barlow`;
+  context.fillStyle = PRIMARY_TEXT_COLOR;
+  drawTextWithInlineLogo(context, textRight, canvas.width - FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2, DARK_MODE, FONT_SIZE);
+
+  // Row 2 (bottom): artist left, secondary info right — both in gray
+  // Left - artist
+  context.textAlign = 'left';
+  context.font = `normal ${SECONDARY_TEXT_FONT_WEIGHT} ${FONT_SIZE}px Barlow`;
+  context.fillStyle = SECONDARY_TEXT_COLOR;
+  if (ARTIST) {
+    context.fillText(ARTIST, FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
+  }
+
+  // Right - secondary info (taken_at etc)
+  if (textArtistRight) {
+    context.textAlign = 'right';
+    context.font = `normal ${SECONDARY_TEXT_FONT_WEIGHT} ${FONT_SIZE}px Barlow`;
+    context.fillStyle = SECONDARY_TEXT_COLOR;
+    context.fillText(textArtistRight, canvas.width - FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
+  }
 
   return canvas;
 };
