@@ -43,7 +43,7 @@ const drawTextWithInlineLogo = (
 
   const zfLogo = darkMode ? nikonZfDark : nikonZfLight;
   if (zfLogo && zfLogo.complete && zfLogo.naturalWidth > 0) {
-    const logoHeight = fontSize * 1.3;
+    const logoHeight = fontSize * 0.85;
     const logoWidth = (zfLogo.naturalWidth / zfLogo.naturalHeight) * logoHeight;
     context.drawImage(zfLogo, curX, y - logoHeight / 2, logoWidth, logoHeight);
     curX += logoWidth;
@@ -76,7 +76,7 @@ const measureTextWithLogo = (
   // Add logo width
   const zfLogo = nikonZfLight;
   if (zfLogo && zfLogo.complete && zfLogo.naturalWidth > 0) {
-    const logoHeight = fontSize * 1.3;
+    const logoHeight = fontSize * 0.85;
     const logoWidth = (zfLogo.naturalWidth / zfLogo.naturalHeight) * logoHeight;
     width += logoWidth;
   }
@@ -120,7 +120,7 @@ const NIKON_ZF_OPTIONS: ThemeOption[] = [
   { id: 'PADDING_BOTTOM', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_LEFT', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_RIGHT', type: 'number', default: 0, description: 'px' },
-  { id: 'TEMPLATE1', type: 'string', default: '{NIKON_ZF_LOGO} + {LENS}' },
+  { id: 'TEMPLATE1', type: 'string', default: 'Nikon {NIKON_ZF_LOGO} + {LENS}' },
   { id: 'TEMPLATE2', type: 'string', default: '{ISO}{MM}{F}{SEC}' },
   { id: 'TEMPLATE3', type: 'string', default: '{TAKEN_AT}' },
   { id: 'TEMPLATE4', type: 'string', default: '@_xsling_' },
