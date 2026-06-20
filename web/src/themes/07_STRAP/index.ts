@@ -37,6 +37,8 @@ supportLogo.set('MAMIYA_LIGHT', loadLogo('/maker/light/mamiya.png'));
 supportLogo.set('MAMIYA_DARK', loadLogo('/maker/dark/mamiya.png'));
 supportLogo.set('NIKON_LIGHT', loadLogo('/maker/light/nikon.png'));
 supportLogo.set('NIKON_DARK', loadLogo('/maker/dark/nikon.png'));
+supportLogo.set('NIKON_ZF_LIGHT', loadLogo('/maker/light/nikon_zf.png'));
+supportLogo.set('NIKON_ZF_DARK', loadLogo('/maker/dark/nikon_zf.png'));
 supportLogo.set('OLYMPUS_LIGHT', loadLogo('/maker/light/olympus.png'));
 supportLogo.set('OLYMPUS_DARK', loadLogo('/maker/dark/olympus.png'));
 supportLogo.set('OM_LIGHT', loadLogo('/maker/light/om.png'));
@@ -64,12 +66,58 @@ const STRAP_OPTIONS: ThemeOption[] = [
   { id: 'PADDING_BOTTOM', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_LEFT', type: 'number', default: 0, description: 'px' },
   { id: 'PADDING_RIGHT', type: 'number', default: 0, description: 'px' },
-  { id: 'TEMPLATE1', type: 'string', default: '{ISO}{MM}{F}{SEC}' },
-  { id: 'TEMPLATE2', type: 'string', default: '{MAKER}{BODY}' },
+  { id: 'TEMPLATE1', type: 'string', default: '{NIKON_ZF_LOGO} + {LENS}' },
+  { id: 'TEMPLATE2', type: 'string', default: '{ISO}{MM}{F}{SEC}' },
   { id: 'TEMPLATE3', type: 'string', default: '{TAKEN_AT}' },
-  { id: 'TEMPLATE4', type: 'string', default: '{LENS}' },
+  { id: 'TEMPLATE4', type: 'string', default: '@_xsling_' },
   { id: 'RIGHT_SECTION_ALIGN', type: 'select', default: 'left', options: ['left', 'right'], description: 'align right section left or right' },
 ];
+
+
+// Helper: draw text that may contain {NIKON_ZF_LOGO} inline
+const drawTextWithInlineLogo = (
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  darkMode: boolean,
+  fontSize: number
+): number => {
+  const LOGO_PLACEHOLDER = '{NIKON_ZF_LOGO}';
+  if (!text.includes(LOGO_PLACEHOLDER)) {
+    context.fillText(text, x, y);
+    return context.measureText(text).width;
+  }
+
+  const parts = text.split(LOGO_PLACEHOLDER);
+  const before = parts[0] || '';
+  const after = parts.slice(1).join('') || '';
+
+  let curX = x;
+
+  // Draw text before logo
+  if (before) {
+    context.fillText(before, curX, y);
+    curX += context.measureText(before).width;
+  }
+
+  // Draw inline Zf logo
+  const zfLogo = darkMode ? supportLogo.get('NIKON_ZF_DARK') : supportLogo.get('NIKON_ZF_LIGHT');
+  if (zfLogo && zfLogo.complete && zfLogo.naturalWidth > 0) {
+    const logoHeight = fontSize * 1.3;
+    const logoWidth = (zfLogo.naturalWidth / zfLogo.naturalHeight) * logoHeight;
+    context.drawImage(zfLogo, curX, y - logoHeight / 2, logoWidth, logoHeight);
+    curX += logoWidth;
+  }
+
+  // Draw text after logo
+  if (after) {
+    context.fillText(after, curX, y);
+    curX += context.measureText(after).width;
+  }
+
+  return curX - x;
+};
 
 const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Store) => {
   const ARTIST = (input.get('ARTIST') as string).trim();
@@ -89,73 +137,93 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
   const PRIMARY_TEXT_COLOR = DARK_MODE ? '#ffffff' : '#000000';
   const SECONDARY_TEXT_COLOR = DARK_MODE ? '#888888' : '#333333';
 
-  const text1 = TEMPLATE1.split('}')
-    .map((part) => `${part}}`)
-    .map((part) =>
-      part
-        .replace(/{MAKER}/g, photo.make)
-        .replace(/{BODY}/g, photo.model || '')
-        .replace(/{LENS}/g, photo.lensModel || '')
-        .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
-        .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
-        .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
-        .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
-        .replace(/{TAKEN_AT}/g, photo.takenAt || '')
-        .replace(/}/g, '')
-    )
-    .filter(Boolean)
-    .join(' ');
+  const text1 = (() => {
+    const ZF_PLACEHOLDER = '___ZF_LOGO___';
+    const tmpl = TEMPLATE1.replace(/{NIKON_ZF_LOGO}/g, ZF_PLACEHOLDER);
+    const result = tmpl.split('}')
+      .map((part) => `${part}}`)
+      .map((part) =>
+        part
+          .replace(/{MAKER}/g, photo.make)
+          .replace(/{BODY}/g, photo.model || '')
+          .replace(/{LENS}/g, photo.lensModel || '')
+          .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
+          .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
+          .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
+          .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
+          .replace(/{TAKEN_AT}/g, photo.takenAt || '')
+          .replace(/}/g, '')
+      )
+      .filter(Boolean)
+      .join(' ');
+    return result.replace(new RegExp(ZF_PLACEHOLDER, 'g'), '{NIKON_ZF_LOGO}');
+  })();
 
-  const text2 = TEMPLATE2.split('}')
-    .map((part) => `${part}}`)
-    .map((part) =>
-      part
-        .replace(/{MAKER}/g, photo.make)
-        .replace(/{BODY}/g, photo.model || '')
-        .replace(/{LENS}/g, photo.lensModel || '')
-        .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
-        .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
-        .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
-        .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
-        .replace(/{TAKEN_AT}/g, photo.takenAt || '')
-        .replace(/}/g, '')
-    )
-    .filter(Boolean)
-    .join(' ');
+  const text2 = (() => {
+    const ZF_PLACEHOLDER = '___ZF_LOGO___';
+    const tmpl = TEMPLATE2.replace(/{NIKON_ZF_LOGO}/g, ZF_PLACEHOLDER);
+    const result = tmpl.split('}')
+      .map((part) => `${part}}`)
+      .map((part) =>
+        part
+          .replace(/{MAKER}/g, photo.make)
+          .replace(/{BODY}/g, photo.model || '')
+          .replace(/{LENS}/g, photo.lensModel || '')
+          .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
+          .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
+          .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
+          .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
+          .replace(/{TAKEN_AT}/g, photo.takenAt || '')
+          .replace(/}/g, '')
+      )
+      .filter(Boolean)
+      .join(' ');
+    return result.replace(new RegExp(ZF_PLACEHOLDER, 'g'), '{NIKON_ZF_LOGO}');
+  })();
 
-  const text3 = TEMPLATE3.split('}')
-    .map((part) => `${part}}`)
-    .map((part) =>
-      part
-        .replace(/{MAKER}/g, photo.make)
-        .replace(/{BODY}/g, photo.model || '')
-        .replace(/{LENS}/g, photo.lensModel || '')
-        .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
-        .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
-        .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
-        .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
-        .replace(/{TAKEN_AT}/g, photo.takenAt || '')
-        .replace(/}/g, '')
-    )
-    .filter(Boolean)
-    .join(' ');
+  const text3 = (() => {
+    const ZF_PLACEHOLDER = '___ZF_LOGO___';
+    const tmpl = TEMPLATE3.replace(/{NIKON_ZF_LOGO}/g, ZF_PLACEHOLDER);
+    const result = tmpl.split('}')
+      .map((part) => `${part}}`)
+      .map((part) =>
+        part
+          .replace(/{MAKER}/g, photo.make)
+          .replace(/{BODY}/g, photo.model || '')
+          .replace(/{LENS}/g, photo.lensModel || '')
+          .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
+          .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
+          .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
+          .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
+          .replace(/{TAKEN_AT}/g, photo.takenAt || '')
+          .replace(/}/g, '')
+      )
+      .filter(Boolean)
+      .join(' ');
+    return result.replace(new RegExp(ZF_PLACEHOLDER, 'g'), '{NIKON_ZF_LOGO}');
+  })();
 
-  const text4 = TEMPLATE4.split('}')
-    .map((part) => `${part}}`)
-    .map((part) =>
-      part
-        .replace(/{MAKER}/g, photo.make)
-        .replace(/{BODY}/g, photo.model || '')
-        .replace(/{LENS}/g, photo.lensModel || '')
-        .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
-        .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
-        .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
-        .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
-        .replace(/{TAKEN_AT}/g, photo.takenAt || '')
-        .replace(/}/g, '')
-    )
-    .filter(Boolean)
-    .join(' ');
+  const text4 = (() => {
+    const ZF_PLACEHOLDER = '___ZF_LOGO___';
+    const tmpl = TEMPLATE4.replace(/{NIKON_ZF_LOGO}/g, ZF_PLACEHOLDER);
+    const result = tmpl.split('}')
+      .map((part) => `${part}}`)
+      .map((part) =>
+        part
+          .replace(/{MAKER}/g, photo.make)
+          .replace(/{BODY}/g, photo.model || '')
+          .replace(/{LENS}/g, photo.lensModel || '')
+          .replace(/{ISO}/g, store.disableExposureMeter ? '' : photo.iso || '')
+          .replace(/{MM}/g, store.disableExposureMeter ? '' : photo.focalLength || '')
+          .replace(/{F}/g, store.disableExposureMeter ? '' : photo.fNumber || '')
+          .replace(/{SEC}/g, store.disableExposureMeter ? '' : photo.exposureTime || '')
+          .replace(/{TAKEN_AT}/g, photo.takenAt || '')
+          .replace(/}/g, '')
+      )
+      .filter(Boolean)
+      .join(' ');
+    return result.replace(new RegExp(ZF_PLACEHOLDER, 'g'), '{NIKON_ZF_LOGO}');
+  })();
 
   const canvas = sandbox(photo, {
     targetRatio: store.ratio,
@@ -173,8 +241,8 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
   context.font = `normal 500 ${FONT_SIZE}px Barlow`;
   context.fillStyle = PRIMARY_TEXT_COLOR;
 
-  if (!store.disableExposureMeter) {
-    context.fillText(text1, FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2);
+  if (!store.disableExposureMeter || text1.includes('{NIKON_ZF_LOGO}')) {
+    drawTextWithInlineLogo(context, text1, FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2, DARK_MODE, FONT_SIZE);
   }
 
   // Shot by
@@ -185,7 +253,7 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
   } else {
     context.font = `normal ${SECONDARY_TEXT_FONT_WEIGHT} ${FONT_SIZE}px Barlow`;
     context.fillStyle = SECONDARY_TEXT_COLOR;
-    context.fillText(text3, FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
+    drawTextWithInlineLogo(context, text3, FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2, DARK_MODE, FONT_SIZE);
   }
 
   // RIGHT SECOND
