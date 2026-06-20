@@ -190,26 +190,54 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
 
   // RIGHT SECOND
   const isRightAlign = RIGHT_SECTION_ALIGN === 'right';
-  context.textAlign = isRightAlign ? 'right' : 'left';
 
   // Maker, Model
   context.fillStyle = PRIMARY_TEXT_COLOR;
   context.font = `normal 500 ${FONT_SIZE}px Barlow`;
   const makerModelText = text2;
   const topWidth = context.measureText(makerModelText).width;
-  context.fillText(makerModelText, isRightAlign ? canvas.width - FONT_SIZE : FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2);
 
   // Lens Model
   context.fillStyle = SECONDARY_TEXT_COLOR;
   context.font = `normal ${SECONDARY_TEXT_FONT_WEIGHT} ${FONT_SIZE}px Barlow`;
   const lensModelText = text4;
   const bottomWidth = context.measureText(lensModelText).width;
-  context.fillText(lensModelText, isRightAlign ? canvas.width - FONT_SIZE : FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
 
-  // DRAW LINE
-  context.beginPath();
-  context.moveTo(isRightAlign ? canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2 : Math.max(topWidth, bottomWidth) + FONT_SIZE * 2, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE);
-  context.lineTo(isRightAlign ? canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2 : Math.max(topWidth, bottomWidth) + FONT_SIZE * 2, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE);
+  const maxTextWidth = Math.max(topWidth, bottomWidth);
+
+  if (isRightAlign) {
+    // DEFAULT: text right-aligned at edge, line to the left of text, logo to the left of line
+    context.textAlign = 'right';
+    context.fillStyle = PRIMARY_TEXT_COLOR;
+    context.font = `normal 500 ${FONT_SIZE}px Barlow`;
+    context.fillText(makerModelText, canvas.width - FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2);
+    context.fillStyle = SECONDARY_TEXT_COLOR;
+    context.font = `normal ${SECONDARY_TEXT_FONT_WEIGHT} ${FONT_SIZE}px Barlow`;
+    context.fillText(lensModelText, canvas.width - FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
+    // line
+    const lineX = canvas.width - maxTextWidth - FONT_SIZE * 2;
+    context.beginPath();
+    context.moveTo(lineX, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE);
+    context.lineTo(lineX, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE);
+  } else {
+    // LEFT: logo to the right of the section edge, then line, then text left-aligned after line
+    // We anchor the whole section from the right edge still
+    // Layout from right: [edge gap] [text] [gap] [line] [gap] [logo] [...]
+    // But text is left-aligned relative to line:
+    // [... logo | line | text ... right edge]
+    const lineX = canvas.width - maxTextWidth - FONT_SIZE * 2;
+    context.textAlign = 'left';
+    context.fillStyle = PRIMARY_TEXT_COLOR;
+    context.font = `normal 500 ${FONT_SIZE}px Barlow`;
+    context.fillText(makerModelText, lineX + FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2);
+    context.fillStyle = SECONDARY_TEXT_COLOR;
+    context.font = `normal ${SECONDARY_TEXT_FONT_WEIGHT} ${FONT_SIZE}px Barlow`;
+    context.fillText(lensModelText, lineX + FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
+    // line
+    context.beginPath();
+    context.moveTo(lineX, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE);
+    context.lineTo(lineX, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE);
+  }
   context.strokeStyle = SECONDARY_TEXT_COLOR;
   context.lineWidth = 2;
   context.stroke();
@@ -316,7 +344,7 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
     }
     context.drawImage(
       logo,
-      isRightAlign ? canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2 - FONT_SIZE - LOGO_WIDTH : Math.max(topWidth, bottomWidth) + FONT_SIZE * 2 + FONT_SIZE,
+      isRightAlign ? canvas.width - maxTextWidth - FONT_SIZE * 2 - FONT_SIZE - LOGO_WIDTH : canvas.width - maxTextWidth - FONT_SIZE * 2 - FONT_SIZE - LOGO_WIDTH,
       canvas.height - PADDING_BOTTOM / 2 - TARGET_LOGO_HEIGHT / 2,
       LOGO_WIDTH,
       TARGET_LOGO_HEIGHT
