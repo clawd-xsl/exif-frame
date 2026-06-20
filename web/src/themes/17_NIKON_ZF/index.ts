@@ -3,7 +3,6 @@ import { Store } from '../../store';
 import sandbox from '../../core/drawing/sandbox';
 import { ThemeFunc } from '../../core/drawing/theme';
 import { ThemeOption, ThemeOptionInput } from '../../pages/theme/types/theme-option';
-import overrideExifMetadata from '../../core/exif-metadata/override-exif-metadata';
 
 const loadLogo = (pathname: string): HTMLImageElement => {
   const image = new Image();
