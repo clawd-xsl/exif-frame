@@ -16,6 +16,7 @@ import { POSTER_FUNC, POSTER_OPTIONS } from './14_POSTER';
 import { CINEMASCOPE_FUNC, CINEMASCOPE_OPTIONS } from './15_CINEMASCOPE';
 import { SIMPLE_FUNC, SIMPLE_OPTIONS } from './16_SIMPLE';
 import { NIKON_ZF_FUNC, NIKON_ZF_OPTIONS } from './17_NIKON_ZF';
+import { NIKON_ZF_ONE_LINE_FUNC, NIKON_ZF_ONE_LINE_OPTIONS } from './18_NIKON_ZF_ONE_LINE';
 
 type AcceptInputType = string | number | boolean;
 
@@ -61,6 +62,7 @@ const themes = [
   { name: 'Tip', func: TIP_FUNC, options: TIP_OPTIONS },
   { name: 'Cinema Scope', func: CINEMASCOPE_FUNC, options: CINEMASCOPE_OPTIONS },
   { name: 'Nikon Zf', func: NIKON_ZF_FUNC, options: NIKON_ZF_OPTIONS },
+  { name: 'Nikon Zf One Line', func: NIKON_ZF_ONE_LINE_FUNC, options: NIKON_ZF_ONE_LINE_OPTIONS },
 ];
 
 export default themes;
