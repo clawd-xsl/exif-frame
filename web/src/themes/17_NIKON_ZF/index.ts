@@ -126,6 +126,7 @@ const NIKON_ZF_OPTIONS: ThemeOption[] = [
   { id: 'TEMPLATE4', type: 'string', default: '@_xsling_' },
   { id: 'RIGHT_SECTION_ALIGN', type: 'select', default: 'left', options: ['left', 'right'], description: 'align right section left or right' },
   { id: 'SHOW_NIKON_LOGO', type: 'boolean', default: true, description: 'show Nikon logo next to divider' },
+  { id: 'SHOW_DIVIDER', type: 'boolean', default: true, description: 'show divider line' },
 ];
 
 const NIKON_ZF_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Store) => {
@@ -142,6 +143,7 @@ const NIKON_ZF_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: 
   const TEMPLATE4 = (input.get('TEMPLATE4') as string).trim();
   const RIGHT_SECTION_ALIGN = (input.get('RIGHT_SECTION_ALIGN') ?? 'left') as string;
   const SHOW_NIKON_LOGO = input.get('SHOW_NIKON_LOGO') as boolean;
+  const SHOW_DIVIDER = input.get('SHOW_DIVIDER') as boolean;
   const FONT_SIZE = 70;
   const BACKGROUND_COLOR = DARK_MODE ? '#000000' : '#ffffff';
   const PRIMARY_TEXT_COLOR = DARK_MODE ? '#ffffff' : '#000000';
@@ -222,9 +224,11 @@ const NIKON_ZF_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: 
     context.moveTo(lineX, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE);
     context.lineTo(lineX, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE);
   }
+  if (SHOW_DIVIDER) {
   context.strokeStyle = SECONDARY_TEXT_COLOR;
   context.lineWidth = 2;
   context.stroke();
+  }
 
   // DRAW Nikon LOGO (left of the divider line)
   const nikonLogo = DARK_MODE ? nikonLogoDark : nikonLogoLight;
