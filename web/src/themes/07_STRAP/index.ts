@@ -68,7 +68,7 @@ const STRAP_OPTIONS: ThemeOption[] = [
   { id: 'TEMPLATE2', type: 'string', default: '{MAKER}{BODY}' },
   { id: 'TEMPLATE3', type: 'string', default: '{TAKEN_AT}' },
   { id: 'TEMPLATE4', type: 'string', default: '{LENS}' },
-  { id: 'RIGHT_SECTION_ALIGN', type: 'select', default: 'right', options: ['left', 'right'], description: 'align right section left or right' },
+  { id: 'RIGHT_SECTION_ALIGN', type: 'select', default: 'left', options: ['left', 'right'], description: 'align right section left or right' },
 ];
 
 const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Store) => {
