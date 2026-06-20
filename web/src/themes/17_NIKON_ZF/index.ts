@@ -11,7 +11,9 @@ const loadLogo = (pathname: string): HTMLImageElement => {
 };
 
 const nikonZfLight = loadLogo('/maker/light/nikon_zf.png');
-const nikonZfDark = loadLogo('/maker/dark/nikon_zf.png');
+const nikonZfDark = loadLogo("/maker/dark/nikon_zf.png");
+const nikonLogoLight = loadLogo("/maker/light/nikon.png");
+const nikonLogoDark = loadLogo("/maker/dark/nikon.png");
 
 // Helper: draw text that may contain {NIKON_ZF_LOGO} inline
 const drawTextWithInlineLogo = (
@@ -222,20 +224,20 @@ const NIKON_ZF_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: 
   context.lineWidth = 2;
   context.stroke();
 
-  // DRAW Nikon Zf LOGO (left of the divider line)
-  const zfLogo = DARK_MODE ? nikonZfDark : nikonZfLight;
+  // DRAW Nikon LOGO (left of the divider line)
+  const nikonLogo = DARK_MODE ? nikonLogoDark : nikonLogoLight;
   let TARGET_LOGO_HEIGHT = FONT_SIZE * 2;
   const TARGET_LOGO_WIDTH = 400;
 
-  if (zfLogo && zfLogo.complete && zfLogo.naturalWidth > 0) {
-    let LOGO_WIDTH = (zfLogo.naturalWidth / zfLogo.naturalHeight) * TARGET_LOGO_HEIGHT;
+  if (nikonLogo && nikonLogo.complete && nikonLogo.naturalWidth > 0) {
+    let LOGO_WIDTH = (nikonLogo.naturalWidth / nikonLogo.naturalHeight) * TARGET_LOGO_HEIGHT;
     if (LOGO_WIDTH > TARGET_LOGO_WIDTH) {
       LOGO_WIDTH = TARGET_LOGO_WIDTH;
-      TARGET_LOGO_HEIGHT = (zfLogo.naturalHeight / zfLogo.naturalWidth) * TARGET_LOGO_WIDTH;
+      TARGET_LOGO_HEIGHT = (nikonLogo.naturalHeight / nikonLogo.naturalWidth) * TARGET_LOGO_WIDTH;
     }
     const lineX = canvas.width - maxTextWidth - FONT_SIZE * 2;
     context.drawImage(
-      zfLogo,
+      nikonLogo,
       lineX - FONT_SIZE - LOGO_WIDTH,
       canvas.height - PADDING_BOTTOM / 2 - TARGET_LOGO_HEIGHT / 2,
       LOGO_WIDTH,
