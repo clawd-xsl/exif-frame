@@ -124,7 +124,7 @@ const NIKON_ZF_ONE_LINE_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput
 
   // Left - camera info
   context.textAlign = 'left';
-  context.font = `normal 300 ${FONT_SIZE}px Barlow`;
+  context.font = `normal 500 ${FONT_SIZE}px Barlow`;
   context.fillStyle = PRIMARY_TEXT_COLOR;
   drawTextWithInlineLogo(context, textLeft, FONT_SIZE, centerY, DARK_MODE, FONT_SIZE);
 
