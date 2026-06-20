@@ -68,6 +68,7 @@ const STRAP_OPTIONS: ThemeOption[] = [
   { id: 'TEMPLATE2', type: 'string', default: '{MAKER}{BODY}' },
   { id: 'TEMPLATE3', type: 'string', default: '{TAKEN_AT}' },
   { id: 'TEMPLATE4', type: 'string', default: '{LENS}' },
+  { id: 'RIGHT_SECTION_ALIGN', type: 'select', default: 'right', options: ['left', 'right'], description: 'align right section left or right' },
 ];
 
 const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Store) => {
@@ -82,6 +83,7 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
   const TEMPLATE2 = (input.get('TEMPLATE2') as string).trim();
   const TEMPLATE3 = (input.get('TEMPLATE3') as string).trim();
   const TEMPLATE4 = (input.get('TEMPLATE4') as string).trim();
+  const RIGHT_SECTION_ALIGN = (input.get('RIGHT_SECTION_ALIGN') ?? 'right') as string;
   const FONT_SIZE = 70;
   const BACKGROUND_COLOR = DARK_MODE ? '#000000' : '#ffffff';
   const PRIMARY_TEXT_COLOR = DARK_MODE ? '#ffffff' : '#000000';
@@ -187,26 +189,27 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
   }
 
   // RIGHT SECOND
-  context.textAlign = 'right';
+  const isRightAlign = RIGHT_SECTION_ALIGN === 'right';
+  context.textAlign = isRightAlign ? 'right' : 'left';
 
   // Maker, Model
   context.fillStyle = PRIMARY_TEXT_COLOR;
   context.font = `normal 500 ${FONT_SIZE}px Barlow`;
   const makerModelText = text2;
   const topWidth = context.measureText(makerModelText).width;
-  context.fillText(makerModelText, canvas.width - FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2);
+  context.fillText(makerModelText, isRightAlign ? canvas.width - FONT_SIZE : FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE / 2);
 
   // Lens Model
   context.fillStyle = SECONDARY_TEXT_COLOR;
   context.font = `normal ${SECONDARY_TEXT_FONT_WEIGHT} ${FONT_SIZE}px Barlow`;
   const lensModelText = text4;
   const bottomWidth = context.measureText(lensModelText).width;
-  context.fillText(lensModelText, canvas.width - FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
+  context.fillText(lensModelText, isRightAlign ? canvas.width - FONT_SIZE : FONT_SIZE, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE / 2);
 
   // DRAW LINE
   context.beginPath();
-  context.moveTo(canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE);
-  context.lineTo(canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE);
+  context.moveTo(isRightAlign ? canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2 : Math.max(topWidth, bottomWidth) + FONT_SIZE * 2, canvas.height - PADDING_BOTTOM / 2 - FONT_SIZE);
+  context.lineTo(isRightAlign ? canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2 : Math.max(topWidth, bottomWidth) + FONT_SIZE * 2, canvas.height - PADDING_BOTTOM / 2 + FONT_SIZE);
   context.strokeStyle = SECONDARY_TEXT_COLOR;
   context.lineWidth = 2;
   context.stroke();
@@ -313,7 +316,7 @@ const STRAP_FUNC: ThemeFunc = (photo: Photo, input: ThemeOptionInput, store: Sto
     }
     context.drawImage(
       logo,
-      canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2 - FONT_SIZE - LOGO_WIDTH,
+      isRightAlign ? canvas.width - Math.max(topWidth, bottomWidth) - FONT_SIZE * 2 - FONT_SIZE - LOGO_WIDTH : Math.max(topWidth, bottomWidth) + FONT_SIZE * 2 + FONT_SIZE,
       canvas.height - PADDING_BOTTOM / 2 - TARGET_LOGO_HEIGHT / 2,
       LOGO_WIDTH,
       TARGET_LOGO_HEIGHT
